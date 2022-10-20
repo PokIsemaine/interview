@@ -56,8 +56,6 @@
 
 
 
-
-
 ### HTTP 过程
 
 
@@ -239,10 +237,6 @@ HTTP的报文头，报文头包含若干个属性，格式为“属性名:属性
 3.请求体
 
 请求体就是 HTTP 要传输的内容，HTTP 可以承载很多类型的数字数据:图片、音频、视频、HTML 文档等。
-
-- 介绍响应报文
-- 首部字段
-- 介绍功能
 
 
 
@@ -598,6 +592,8 @@ Cache-Control: public
 
 
 ### HTTP 演化
+
+![HTTP 演化.png](https://s2.loli.net/2022/10/14/EAwVL38vkYMb7Qm.png)
 
 #### HTTP/1.0 的问题？
 
@@ -984,7 +980,7 @@ HTTP/2 **二进制帧**的结构如下图：
 
 知道了 HTTP/2 的帧结构后，我们再来看看它是如何实现**并发传输**的。
 
-我们都知道 HTTP/1.1 的实现是基于请求-响应模型的。同一个连接中，HTTP 完成一个事务（请求与响应），才能处理下一个事务，也就是说在发出请求等待响应的过程中，是没办法做其他事情的，如果响应迟迟不来，那么后续的请求是无法发送的，也造成了**队头阻塞**的问题。
+我们都知道 HTTP/1.1 的实现是基于请求-响应模型的。**同一个连接中，HTTP 完成一个事务（请求与响应），才能处理下一个事务，也就是说在发出请求等待响应的过程中**，是没办法做其他事情的，如果响应迟迟不来，那么后续的请求是无法发送的，也造成了**队头阻塞**的问题。
 
 而 HTTP/2 就很牛逼了，通过 Stream 这个设计，**多个 Stream 复用一条 TCP 连接，达到并发的效果**，解决了 HTTP/1.1 队头阻塞的问题，提高了 HTTP 传输的吞吐量。
 
@@ -1084,7 +1080,7 @@ HTTP/2 多个请求是跑在一个 TCP 连接中的，那么当 TCP 丢包时，
 
 ![img](https://cdn.xiaolincoding.com/gh/xiaolincoder/network/quic/http2%E9%98%BB%E5%A1%9E.jpeg)
 
-因为 TCP 是字节流协议，TCP 层必须保证收到的字节数据是完整且有序的，如果序列号较低的 TCP 段在网络传输中丢失了，即使序列号较高的 TCP 段已经被接收了，应用层也无法从内核中读取到这部分数据，从 HTTP 视角看，就是请求被阻塞了。
+因为 TCP 是字节流协议，TCP 层必须保证收到的字节数据是完整且有序的，如果序列号较低的 TCP 段在网络传输中丢失了，即使序列号较高的 TCP 段已经被接收了，**应用层也无法从内核中读取到这部分数据，从 HTTP 视角看，就是请求被阻塞了。**
 
 举个例子，如下图：
 
@@ -1176,7 +1172,7 @@ QUIC 是新协议，对于很多网络设备，根本不知道什么是 QUIC，�
 
 来看看 HTTP/3 协议在 HTTP 这一层做了什么变化。
 
-HTTP/3 同 HTTP/2 一样采用二进制帧的结构，不同的地方在于 HTTP/2 的二进制帧里需要定义 Stream，而 HTTP/3 自身不需要再定义 Stream，直接使用 QUIC 里的 Stream，于是 HTTP/3 的帧的结构也变简单了。 ![img](https://cdn.xiaolincoding.com/gh/xiaolincoder/ImageHost4@main/%E7%BD%91%E7%BB%9C/http3/http3frame.png)
+HTTP/3 同 HTTP/2 一样采用二进制帧的结构，不同的地方在于 HTTP/2 的二进制帧里需要定义 Stream，而 HTTP/3 自身不需要再定义 Stream，直接使用 QUIC 里的 Stream**，于是 HTTP/3 的帧的结构也变简单了。** ![img](https://cdn.xiaolincoding.com/gh/xiaolincoder/ImageHost4@main/%E7%BD%91%E7%BB%9C/http3/http3frame.png)
 
 从上图可以看到，HTTP/3 帧头只有两个字段：类型和长度。
 
