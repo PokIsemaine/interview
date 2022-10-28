@@ -11,6 +11,7 @@
 * HTTP 请求报文和响应报文的结构？
 * HTTP 首部字段？通用首部字段、请求首部字段、响应首部字段、实体首部字段都有什么？
 * HTTP 的 BODY 是二进制还是文本？
+* HTTP 如何解决粘包问题？content-length 字段和 chunk 字段了解吗？
 
 
 
@@ -74,6 +75,16 @@ HTTP解析是怎么做的？
 
 * 有了 HTTP 为什么还要 RPC？
 * 有了 HTTP 为什么还要 websocket？
+
+
+
+### Cookie 、Session、Token
+
+* 什么是 Session？
+* 什么是 Cookie？
+* 什么是 JSON WebToken？
+* Cookie 和 Session 有什么区别？
+* JWT 和 Session Cookie 有什么区别？
 
 
 
@@ -377,6 +388,119 @@ Content-Type: text/htmlContent-Type: image/png
 这样浏览器看到报文里的类型是"text/html"就知道是HTML文件，会调用排版引擎渲染出页面，看到image/png就知道是一个PNG文件，就会在页面上显示出图像。
 
 Accept-Encoding字段标记的是客户端支持的压缩格式，例如上面说的gzip,deflate等，同样也可以用
+
+
+
+#### HTTP 如何解决粘包问题？content-length 字段和 chunk 字段了解吗？
+
+https://blog.csdn.net/u013378306/article/details/107742524
+
+https://blog.csdn.net/weixin_42002747/article/details/124334361
+
+**粘包问题存在争议：看 TCP 部分相关回答**
+
+
+
+**在讲粘包问题之前，首先得明白这个包是应用层的数据包。**
+当数据在传输层时，由于TCP是面向字节流的，所以它看到的数据是按照顺序一个个放在缓冲区中的，而对于应用层而言，看到的只是一连串的数据，那么应用层该从哪里读数据，读到哪合适呢？因此就有了粘包问题。
+
+所以要避免粘包问题，就得明确两个包之间的边界：
+
+* 对于定长的数据包，保证每次都按固定的大小读取即可；
+* 对于变长的包，可在包头的位置，约定一个包总长度的字段，从而就知道了包的结束位置；
+* 对于变长的包，还可以在包和包之间使用明确的分隔符（应用层协议，是我们自己写的，只要保证分隔符不和正文冲突即可）
+
+若传输层是UDP协议，应用层会不会出现粘包问题？
+
+对于UDP而言，报文长度是固定的，就算没有交付，长度依然在，同时，UDP是一个一个把数据交付给应用层的，就有很明显的边界
+站在应用层的角度，每次收到的UDP报文，要么是一整个，要么不收，不会出现半个的情况
+
+
+
+**HTTP 解决方案**
+
+http请求报文格式
+
+* 请求行：以\r\n结束；
+* 请求头：以\r\n结束；
+* \r\n；
+* 数据；
+
+http响应报文格式
+
+* 响应行：以\r\n结束；
+* 响应头：以\r\n结束；
+* \r\n；
+* 数据；
+
+遇到第一个\r\n表示读取请求行或响应行结束；
+
+遇到\r\n\r\n表示读取请求头或响应头结束；
+
+
+
+怎么读取body数据呢？
+
+* 根据请求头或响应头的Content-Length，单位是字节；
+* chunked协议，取代Content-Length，如果请求头或者响应头有Transfer-Encoding: chunked，表示根据chunked协议协议读取数据
+
+
+
+**2.1 背景**
+   HTTP 协议通常使用 Content-Length 来标识 body 的长度，在服务器端，需要先申请对应长度的 buffer，然后再赋值。如果需要一边生产数据一边发送数据，就需要使用 "Transfer-Encoding: chunked" 来代替 Content-Length，也就是对数据进行分块传输。
+
+
+
+**2.2 Content-Length 描述**
+    1：http server 接收数据时，发现 header 中有 Content-Length 属性，则读取 Content-Length 的值，确定需要读取 body 的长度。
+
+​    2：http server 发送数据时，根据需要发送 byte 的长度，在 header 中增加 Content-Length 项，其中 value 为 byte 的长度，然后将 byte 数据当做 body 发送到客户端。
+
+
+
+**2.3 chunked 描述**
+
+ 1：http server 接收数据时，发现 header 中有 Transfer-Encoding: chunked，则会按照 truncked 协议分批读取数据。
+
+ 2：http server 发送数据时，如果需要分批发送到客户端，则需要在 header 中加上 Transfer-Encoding: chunked，然后按照 truncked 协议分批发送数据。
+
+
+
+**2.4 truncked 协议**
+
+　　
+
+![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTMwNDM2NC8yMDE5MDUvMTMwNDM2NC0yMDE5MDUyOTIxMTg1NzgwOC0yMDMxMzcxNjE1LmpwZw?x-oss-process=image/format,png)
+
+
+
+
+
+
+
+​    1：主要包含三部分：chunk，last-chunk 和 trailer。如果分多次发送，则 chunk 有多份。
+
+​    2：chunk 主要包含大小和数据，大小表示这个这个 trunck 包的大小，使用 16 进制标示。其中 trunk 之间的分隔符为 CRLF。
+
+​    3：通过 last-chunk 来标识 chunk 发送完成。 一般读取到 last-chunk(内容为 0) 的时候，代表 chunk 发送完成。
+
+​    4：trailer 表示增加 header 等额外信息，一般情况下 header 是空。通过 CRLF 来标识整个 chunked 数据发送完成。
+
+
+
+ **2.5 优点**
+   1：假如 body 的长度是 10K，对于 Content-Length 则需要申请 10K 连续的 buffer，而对于 Transfer-Encoding: chunked 可以申请 1k 的空间，然后循环使用 10 次。节省了内存空间的开销。
+
+   2：如果内容的长度不可知，则可使用 trunked 方式能有效的解决 Content-Length 的问题
+
+   3：http 服务器压缩可以采用分块压缩，而不是整个快压缩。分块压缩可以一边进行压缩，一般发送数据，来加快数据的传输时间。
+
+
+
+ **2.6 缺点**
+   1：truncked 协议解析比较复杂。
+
+   2：在 http 转发的场景下 (比如 nginx) 难以处理，比如如何对分块数据进行转发。
 
 
 
@@ -1206,3 +1330,274 @@ QUIC 会有两个特殊的单向流，所谓的单向流只有一端可以发送
 
 
 #### 有了 HTTP 为什么还要 websocket？
+
+
+
+### Cookie、Session、Token
+
+https://cloud.tencent.com/developer/article/1704064
+
+HTTP 协议是一种`无状态协议`，即每次服务端接收到客户端的请求时，都是一个全新的请求，[服务器](https://cloud.tencent.com/product/cvm?from=10680)并不知道客户端的历史请求记录；Session 和 Cookie 的主要目的就是为了弥补 HTTP 的无状态特性。
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7022588/v546ndidb8.png?imageView2/2/w/1620)
+
+#### 什么是 Session？
+
+**Session 是什么**
+
+客户端请求服务端，服务端会为这次请求开辟一块`内存空间`，这个对象便是 Session 对象，存储结构为 `ConcurrentHashMap`。Session 弥补了 HTTP 无状态特性，服务器可以利用 Session 存储客户端在同一个会话期间的一些操作记录。
+
+**Session 如何判断是否是同一会话**
+
+服务器第一次接收到请求时，开辟了一块 Session 空间（创建了Session对象），同时生成一个 sessionId ，并通过响应头的 **Set-Cookie：JSESSIONID=XXXXXXX **命令，向客户端发送要求设置 Cookie 的响应； 客户端收到响应后，在本机客户端设置了一个 **JSESSIONID=XXXXXXX **的 Cookie 信息，该 Cookie 的过期时间为浏览器会话结束；
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7022588/fd22y7mcf1.png?imageView2/2/w/1620)
+
+接下来客户端每次向同一个网站发送请求时，请求头都会带上该 Cookie信息（包含 sessionId ）， 然后，服务器通过读取请求头中的 Cookie 信息，获取名称为 JSESSIONID 的值，得到此次请求的 sessionId。
+
+**Session 的缺点**
+
+Session 机制有个缺点，比如 A 服务器存储了 Session，就是做了负载均衡后，假如一段时间内 A 的访问量激增，会转发到 B 进行访问，但是 B 服务器并没有存储 A 的 Session，会导致 Session 的失效。
+
+#### 什么是 Cookie？
+
+HTTP 协议中的 Cookie 包括 `Web Cookie` 和`浏览器 Cookie`，它是服务器发送到 Web 浏览器的一小块数据。服务器发送到浏览器的 Cookie，浏览器会进行存储，并与下一个请求一起发送到服务器。通常，它用于判断两个请求是否来自于同一个浏览器，例如用户保持登录状态。
+
+- HTTP Cookie 机制是 HTTP 协议无状态的一种补充和改良
+
+Cookie 主要用于下面三个目的
+
+- `会话管理`：登陆、购物车、游戏得分或者服务器应该记住的其他内容
+
+- `个性化`：用户偏好、主题或者其他设置
+
+- `追踪`：记录和分析用户行为
+
+Cookie 曾经用于一般的客户端存储。虽然这是合法的，因为它们是在客户端上存储数据的唯一方法，但如今建议使用现代存储 API。Cookie 随每个请求一起发送，因此它们可能会降低性能（尤其是对于移动数据连接而言）。
+
+**创建 Cookie**
+
+当接收到客户端发出的 HTTP 请求时，服务器可以发送带有响应的 `Set-Cookie` 标头，Cookie 通常由浏览器存储，然后将 Cookie 与 HTTP 标头一同向服务器发出请求。
+
+**Set-Cookie 和 Cookie 标头**
+
+`Set-Cookie` HTTP 响应标头将 cookie 从服务器发送到用户代理。下面是一个发送 Cookie 的例子
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7022588/oap79bdexv.png)
+
+此标头告诉客户端存储 Cookie
+
+现在，随着对服务器的每个新请求，浏览器将使用 Cookie 头将所有以前存储的 Cookie 发送回服务器。
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7022588/qb7z1wrrgz.png)
+
+有两种类型的 Cookies，一种是 Session Cookies，一种是 Persistent Cookies，如果 Cookie 不包含到期日期，则将其视为会话 Cookie。会话 Cookie 存储在内存中，永远不会写入磁盘，当浏览器关闭时，此后 Cookie 将永久丢失。如果 Cookie 包含`有效期` ，则将其视为持久性 Cookie。在到期指定的日期，Cookie 将从磁盘中删除。
+
+还有一种是 `Cookie的 Secure 和 HttpOnly 标记`，下面依次来介绍一下
+
+**会话 Cookies**（Session Cookie)
+
+上面的示例创建的是会话 Cookie ，会话 Cookie 有个特征，客户端关闭时 Cookie 会删除，因为它没有指定`Expires`或 `Max-Age` 指令。
+
+但是，Web 浏览器可能会使用会话还原，这会使大多数会话 Cookie 保持永久状态，就像从未关闭过浏览器一样。
+
+
+
+**永久性 Cookies**
+
+永久性 Cookie 不会在客户端关闭时过期，而是在`特定日期（Expires）`或`特定时间长度（Max-Age）`外过期。例如
+
+```javascript
+Set-Cookie: id=a3fWa; Expires=Wed, 21 Oct 2015 07:28:00 GMT;
+```
+
+**Cookie 的 Secure 和 HttpOnly 标记**
+
+安全的 Cookie 需要经过 HTTPS 协议通过加密的方式发送到服务器。即使是安全的，也不应该将敏感信息存储在cookie 中，因为它们本质上是不安全的，并且此标志不能提供真正的保护。
+
+**HttpOnly 的作用**
+
+-  会话 Cookie 中缺少 HttpOnly 属性会导致攻击者可以通过程序(JS脚本、Applet等)获取到用户的 Cookie 信息，造成用户 Cookie 信息泄露，增加攻击者的跨站脚本攻击威胁。 
+-  HttpOnly 是微软对 Cookie 做的扩展，该值指定 Cookie 是否可通过客户端脚本访问。 
+-  如果在 Cookie 中没有设置 HttpOnly 属性为 true，可能导致 Cookie 被窃取。窃取的 Cookie 可以包含标识站点用户的敏感信息，如 ASP.NET 会话 ID 或 Forms [身份验证](https://cloud.tencent.com/product/mfas?from=10680)票证，攻击者可以重播窃取的 Cookie，以便伪装成用户或获取敏感信息，进行跨站脚本攻击等。 
+
+**Cookie 的作用域**
+
+`Domain` 和 `Path` 标识定义了 Cookie 的作用域：即 Cookie 应该发送给哪些 URL。
+
+`Domain` 标识指定了哪些主机可以接受 Cookie。如果不指定，默认为当前主机(不包含子域名）。如果指定了`Domain`，则一般包含子域名。
+
+例如，如果设置 `Domain=mozilla.org`，则 Cookie 也包含在子域名中（如`developer.mozilla.org`）。
+
+例如，设置 `Path=/docs`，则以下地址都会匹配：
+
+- `/docs`
+- `/docs/Web/`
+- `/docs/Web/HTTP`
+
+#### 什么是 JSON Web Token？
+
+**token** 令牌，是用户身份的验证方式。 最简单的token组成:uid(用户唯一的身份标识)、time（当前时间的时间戳）、sign（签名）。 **对Token认证的五点认识**
+
+- 一个Token就是一些信息的集合；
+
+- 在Token中包含足够多的信息，以便在后续请求中减少查询[数据库](https://cloud.tencent.com/solution/database?from=10680)的几率；
+
+- 服务端需要对cookie和HTTP Authrorization Header进行Token信息的检查；
+
+- 基于上一点，你可以用一套token认证代码来面对浏览器类客户端和非浏览器类客户端；
+
+- 因为token是被签名的，所以我们可以认为一个可以解码认证通过的token是由我们系统发放的，其中带的信息是合法有效的；
+
+	
+
+客户端A访问服务器，服务器给了客户端token，客户端A拿着token访问服务器，服务器验证token，返回数据。
+
+![img](https://pic4.zhimg.com/v2-56ce64b6910836876d7476824f7bee0b_b.jpg)
+
+
+
+Json Web Token 的简称就是 JWT，通常可以称为 `Json 令牌`。它是`RFC 7519` 中定义的用于`安全的`将信息作为 `Json 对象`进行传输的一种形式。JWT 中存储的信息是经过`数字签名`的，因此可以被信任和理解。可以使用 HMAC 算法或使用 RSA/ECDSA 的公用/专用密钥对 JWT 进行签名。
+
+使用 JWT 主要用来下面两点
+
+- `认证(Authorization)`：这是使用 JWT 最常见的一种情况，一旦用户登录，后面每个请求都会包含 JWT，从而允许用户访问该令牌所允许的路由、服务和资源。`单点登录`是当今广泛使用 JWT 的一项功能，因为它的开销很小。
+- `信息交换(Information Exchange)`：JWT 是能够安全传输信息的一种方式。通过使用公钥/私钥对 JWT 进行签名认证。此外，由于签名是使用 `head` 和 `payload` 计算的，因此你还可以验证内容是否遭到篡改。
+
+**JWT 的格式**
+
+下面，我们会探讨一下 JWT 的组成和格式是什么
+
+JWT 主要由三部分组成，每个部分用 `.` 进行分割，各个部分分别是
+
+- `Header`
+- `Payload`
+- `Signature`
+
+因此，一个非常简单的 JWT 组成会是下面这样
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7022588/ebdlw0iodk.png)
+
+然后我们分别对不同的部分进行探讨。
+
+**Header**
+
+Header 是 JWT 的标头，它通常由两部分组成：`令牌的类型(即 JWT)`和使用的 `签名算法`，例如 HMAC SHA256 或 RSA。
+
+例如
+
+```javascript
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+指定类型和签名算法后，Json 块被 `Base64Url` 编码形成 JWT 的第一部分。
+
+**Payload**
+
+Token 的第二部分是 `Payload`，Payload 中包含一个声明。声明是有关实体（通常是用户）和其他数据的声明。共有三种类型的声明：**registered, public 和 private** 声明。
+
+- `registered 声明`： 包含一组建议使用的预定义声明，主要包括
+
+| ISS                   | 签发人   |
+| :-------------------- | :------- |
+| iss (issuer)          | 签发人   |
+| exp (expiration time) | 过期时间 |
+| sub (subject)         | 主题     |
+| aud (audience)        | 受众     |
+| nbf (Not Before)      | 生效时间 |
+| iat (Issued At)       | 签发时间 |
+| jti (JWT ID)          | 编号     |
+
+- `public 声明`：公共的声明，可以添加任何的信息，一般添加用户的相关信息或其他业务需要的必要信息，但不建议添加敏感信息，因为该部分在客户端可解密。
+- `private 声明`：自定义声明，旨在在同意使用它们的各方之间共享信息，既不是注册声明也不是公共声明。
+
+例如
+
+```javascript
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "admin": true
+}
+```
+
+然后 payload Json 块会被`Base64Url` 编码形成 JWT 的第二部分。
+
+**signature**
+
+JWT 的第三部分是一个签证信息，这个签证信息由三部分组成
+
+- header (base64后的)
+- payload (base64后的)
+- secret
+
+比如我们需要 HMAC SHA256 算法进行签名
+
+```javascript
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  secret)
+```
+
+签名用于验证消息在此过程中没有更改，并且对于使用私钥进行签名的令牌，它还可以验证 JWT 的发送者的真实身份
+
+**拼凑在一起**
+
+现在我们把上面的三个由点分隔的 Base64-URL 字符串部分组成在一起，这个字符串可以在 HTML 和 HTTP 环境中轻松传递这些字符串。
+
+下面是一个完整的 JWT 示例，它对 header 和 payload 进行编码，然后使用 signature 进行签名
+
+```javascript
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ
+```
+
+复制
+
+![img](https://ask.qcloudimg.com/http-save/yehe-7022588/o401vy1pn.png)
+
+如果想自己测试编写的话，可以访问 JWT [官网](https://jwt.io/#debugger-io) 
+
+
+
+#### Cookie 和 Session 的区别？
+
+- 数据存放位置不同：Session数据是存在服务器中的，cookie数据存放在浏览器当中。
+- 安全程度不同：cookie放在服务器中不是很安全，session放在服务器中，相对安全。
+- 性能使用程度不同：session放在服务器上，访问增多会占用服务器的性能；考虑到减轻服务器性能方面，应使用cookie。
+- 数据存储大小不同：单个cookie保存的数据不能超过4K，session存储在服务端，根据服务器大小来定。
+
+#### 
+
+#### JWT 和 Session Cookies 的不同？
+
+JWT 和 Session Cookies 都提供安全的用户身份验证，但是它们有以下几点不同
+
+**密码签名**
+
+JWT 具有加密签名，而 Session Cookies 则没有。
+
+**JSON 是无状态的**
+
+JWT 是`无状态`的，因为声明被存储在`客户端`，而不是服务端内存中。
+
+身份验证可以在`本地`进行，而不是在请求必须通过服务器数据库或类似位置中进行。 这意味着可以对用户进行多次身份验证，而无需与站点或应用程序的数据库进行通信，也无需在此过程中消耗大量资源。
+
+**可扩展性**
+
+Session Cookies 是存储在服务器内存中，这就意味着如果网站或者应用很大的情况下会耗费大量的资源。由于 JWT 是无状态的，在许多情况下，它们可以节省服务器资源。因此 JWT 要比 Session Cookies 具有更强的`可扩展性`。
+
+**JWT 支持跨域认证**
+
+Session Cookies 只能用在`单个节点的域`或者它的`子域`中有效。如果它们尝试通过第三个节点访问，就会被禁止。如果你希望自己的网站和其他站点建立安全连接时，这是一个问题。
+
+使用 JWT 可以解决这个问题，使用 JWT 能够通过`多个节点`进行用户认证，也就是我们常说的`跨域认证`。
+
+**JWT 和 Session Cookies 的选型**
+
+对于只需要登录用户并访问存储在站点数据库中的一些信息的中小型网站来说，Session Cookies 通常就能满足。
+
+如果你有企业级站点，应用程序或附近的站点，并且需要处理大量的请求，尤其是第三方或很多第三方（包括位于不同域的API），则 JWT 显然更适合。
