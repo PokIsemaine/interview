@@ -12,9 +12,22 @@
 
 * 容器内部删除一个元素？
 
-	
+* 容器 size 和 capacity 区别
 
-	
+* 容器 reserve 和 resize 区别
+
+* 谈谈仿函数
+
+
+### 空间配置器
+
+STL中的allocator、deallocator
+
+STL的两级空间配置器
+
+STL 内存池
+
+allocator 的作用
 
 ### 迭代器
 
@@ -22,16 +35,22 @@
 * STL迭代器如何实现
 * 迭代器失效的情况
 * 迭代器：++it、it++哪个好，为什么
+* 迭代器的种类
+
+<https://blog.csdn.net/daaikuaichuan/article/details/80717222#t1>
 
 ### vector
 
 * 函数里的vector存在堆上还是栈上，为什么？
 * 定义了一个vector, 内存是如何管控的， 放在哪里（讲了动态内存， 后面被打断， 想问的是两个阶段的分配地址， 第一个是在连接过程中的重定位， 一个是加载到内存的物理地址
 * vector扩容后会做哪些操作vector扩容后把旧空间的数据搬到新空间用拷贝构造还是移动构造
-* 什么时候用vector,什么时候用list
+* 什么时候用vector,什么时候用list，有什么区别
 * vector 的实现？
-* vector的增加删除都是怎么做的？为什么是1.5或者是2倍？
-* vector如何释放空间?
+* vector的增加删除都是怎么做的？为什么是1.5或者是2倍？为什么不是固定增加
+* vector如何释放空间?clear,swap,shrink_to_fit
+* `vector<bool>` 有什么问题？
+* `vector<void>` 合理吗
+* 元素类型可以是引用吗
 
 ### map/set
 
@@ -43,8 +62,6 @@
 * map、set是怎么实现的，红黑树是怎么能够同时实现这两种容器？
 * set和map的区别，multimap和multiset的区别
 
-
-
 ### unordered_map
 
 * STL中hash_map扩容发生什么？
@@ -52,20 +69,16 @@
 * unordered_map 的实现
 * hashtable中解决冲突有哪些方法？
 
-
-
 ### priority_queue
 
 * priority_queue 的实现？
 * 从效率角度考虑，通过什么 数据 结构可实现优先级队列？
 
-
-
 ### list/stack/queue/forward_list
 
 * list的实现
 
-* list 为什么不用单向链表而用双向链表，二者有什么区别，size差多少，各自优缺点 
+* list 为什么不用单向链表而用双向链表，二者有什么区别，size差多少，各自优缺点
 
 * STL中stack和queue的实现
 
@@ -73,13 +86,11 @@
 
 * STL中list、dqueue、vector 之间的区别
 
-	
+* t t
 
 ### deque
 
 * deque 的实现
-
-
 
 ## 回答
 
@@ -90,7 +101,7 @@
 * vector 底层数据结构为数组 ，支持快速随机访问
 * ist 底层数据结构为双向链表，支持快速增删
 * deque 底层数据结构为一个中央控制器和多个缓冲区，详细见STL源码剖析P146，支持首尾（中间不能）快速增删，也支持随机访问。
-	deque是一个双端队列(double-ended queue)，也是在堆中保存内容的.它的保存形式如下:[堆1] --> [堆2] -->[堆3] --> ...每个堆保存好几个元素,然后堆和堆之间有指针指向,看起来像是list和vector的结合品.
+ deque是一个双端队列(double-ended queue)，也是在堆中保存内容的.它的保存形式如下:[堆1] --> [堆2] -->[堆3] --> ...每个堆保存好几个元素,然后堆和堆之间有指针指向,看起来像是list和vector的结合品.
 * stack 底层一般用list或deque实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时
 * queue 底层一般用list或deque实现，封闭头部即可，不用vector的原因应该是容量大小有限制，扩容耗时（stack和queue其实是适配器,而不叫容器，因为是对容器的再封装）
 * priority_queue 的底层数据结构一般为vector为底层容器，堆heap为处理规则来管理底层容器实现
@@ -102,8 +113,6 @@
 * unordered_multiset 底层数据结构为hash表，无序，可重复
 * unordered_map 底层数据结构为hash表，无序，不重复
 * unordered_multimap 底层数据结构为hash表，无序，可重复
-
-
 
 #### 容器内部删除一个元素？
 
@@ -121,6 +130,73 @@ c.erase(it++)
 
 
 
+#### 谈谈仿函数
+
+仿函数（functor）又称为函数对象（function object）是一个能行使函数功能的类。仿函数的语法几乎和我们普通的函数调用一样，不过作为仿函数的类，都必须重载operator()运算符，举个例子：
+
+```cpp
+class Func{
+public:
+    void operator() (const string& str) const {
+        cout<<str<<endl;
+    }
+};
+
+Func myFunc;
+myFunc("helloworld!");
+
+>>>helloworld!
+```
+
+仿函数既能想普通函数一样传入给定数量的参数，还能存储或者处理更多我们需要的有用信息。我们可以举个例子：
+
+假设有一个vector<string>，你的任务是统计长度小于5的string的个数，如果使用count_if函数的话，你的代码可能长成这样：
+
+```cpp
+ bool LengthIsLessThanFive(const string& str) {
+     return str.length()<5;    
+ }
+ int res=count_if(vec.begin(), vec.end(), LengthIsLessThanFive);
+```
+
+其中count_if函数的第三个参数是一个函数指针，返回一个bool类型的值。一般的，如果需要将特定的阈值长度也传入的话，我们可能将函数写成这样：
+
+```cpp
+ bool LenthIsLessThan(const string& str, int len) {
+     return str.length()<len;
+ }
+```
+
+这个函数看起来比前面一个版本更具有一般性，但是他不能满足count_if函数的参数要求：count_if要求的是unary function（仅带有一个参数）作为它的最后一个参数。如果我们使用仿函数，是不是就豁然开朗了呢：
+
+```cpp
+class ShorterThan {
+ public:
+     explicit ShorterThan(int maxLength) : length(maxLength) {}
+     bool operator() (const string& str) const {
+         return str.length() < length;
+     }
+ private:
+     const int length;
+ };
+```
+
+
+
+### 空间配置器
+
+STL中的allocator、deallocator
+
+STL的两级空间配置器
+
+STL 内存池
+
+#### allocator 的作用
+
+ new在内存分配上面有一些局限性，new的机制是将内存分配和对象构造组合在一起，同样的，delete也是将对象析构和内存释放组合在一起的。allocator将这两部分分开进行，allocator申请一部分内存，不进行初始化对象，只有当需要的时候才进行初始化操作。
+
+
+
 ### 迭代器
 
 #### 说一下STL每种容器对应的迭代器
@@ -132,21 +208,13 @@ c.erase(it++)
 | list、(multi)set/map                   | 双向迭代器     |
 | unordered_(multi)set/map、forward_list | 前向迭代器     |
 
-
-
 #### STL迭代器如何实现
 
 1、 迭代器是一种抽象的设计理念，通过迭代器可以在不了解容器内部原理的情况下遍历容器，除此之外，STL中迭代器一个最重要的作用就是作为容器与STL算法的粘合剂。
 
- 
-
 2、 迭代器的作用就是提供一个遍历容器内部所有元素的接口，因此迭代器内部必须保存一个与容器相关联的指针，然后重载各种运算操作来遍历，其中最重要的是*运算符与->运算符，以及++、--等可能需要重载的运算符重载。这和C++中的智能指针很像，智能指针也是将一个指针封装，然后通过引用计数或是其他方法完成自动释放内存的功能。
 
- 
-
 3、最常用的迭代器的相应型别有五种：value type、difference type、pointer、reference、iterator catagoly;
-
-
 
 #### 迭代器失效的情况
 
@@ -157,8 +225,6 @@ c.erase(it++)
 1、尾后插入：size < capacity时，首迭代器不失效尾迭代失效（未重新分配空间），size == capacity时，所有迭代器均失效（需要重新分配空间）。
 
 2、中间插入：中间插入：size < capacity时，首迭代器不失效但插入元素之后所有迭代器失效，size == capacity时，所有迭代器均失效。
-
- 
 
 **删除元素：**
 
@@ -173,10 +239,6 @@ deque 和 vector 的情况类似,
 map/set等关联容器底层是红黑树删除节点不会影响其他节点的迭代器, 使用递增方法获取下一个迭代器 mmp.erase(iter++);
 
 unordered_(hash) 迭代器意义不大, rehash之后, 迭代器应该也是全部失效.
-
-
-
- 
 
 **红黑树概念**
 
@@ -196,14 +258,10 @@ unordered_(hash) 迭代器意义不大, rehash之后, 迭代器应该也是全�
 
 根节点必为黑节点。
 
-- 红节点的子节点必为黑（黑节点子节点可为黑）。
-- 从根到NULL的任何路径上黑结点数相同。
+* 红节点的子节点必为黑（黑节点子节点可为黑）。
+* 从根到NULL的任何路径上黑结点数相同。
 
 3、查找时间一定可以控制在O(logn)。
-
-
-
-
 
 #### 迭代器：++it、it++哪个好，为什么？
 
@@ -233,8 +291,6 @@ int temp = *this;
    return temp;                  
 } 
 ```
-
-
 
 ### vector
 
@@ -284,21 +340,13 @@ int main()
 
 需要注意的是，频繁对vector调用push_back()对性能是有影响的，这是因为每插入一个元素，如果空间够用的话还能直接插入，若空间不够用，则需要重新配置空间，移动数据，释放原空间等操作，对程序性能会造成一定的影响
 
-
-
 #### vector的增加删除都是怎么做的？为什么是1.5或者是2倍？
 
 \1) 新增元素：vector通过一个连续的数组存放元素，如果集合已满，在新增数据的时候，就要分配一块更大的内存，将原来的数据复制过来，释放之前的内存，在插入新增的元素；
 
- 
-
 \2) 对vector的任何操作，一旦引起空间重新配置，指向原vector的所有迭代器就都失效了 ；
 
- 
-
 \3) 初始时刻vector的capacity为0，塞入第一个元素后capacity增加为1；
-
- 
 
 \4) 不同的编译器实现的扩容方式不一样，VS2015中以1.5倍扩容，GCC以2倍扩容。
 
@@ -316,8 +364,6 @@ int main()
 
 \6) 不同的是：采用remove一般情况下不会改变容器的大小，而pop_back()与erase()等成员函数会改变容器的大小。
 
-
-
 #### vector如何释放空间?
 
 由于vector的内存占用空间只增不减，比如你首先分配了10,000个字节，然后erase掉后面9,999个，留下一个有效元素，但是内存占用仍为10,000个。所有内存空间是在vector析构时候才能被系统回收。empty()用来检测容器是否为空的，clear()可以清空所有元素。但是即使clear()，vector所占用的内存空间依然如故，无法保证内存的回收。
@@ -328,8 +374,6 @@ int main()
 vector(Vec).swap(Vec); //将Vec的内存清除； 
 vector().swap(Vec); //清空Vec的内存；
 ```
-
-
 
 #### STL 中vector删除其中的元素，迭代器如何变化？为什么是两倍扩容？释放空间？
 
@@ -368,8 +412,6 @@ void resize(size_type __new_size, const _Tp& __x) {
 
 对比可以发现采用采用成倍方式扩容，可以保证常数的时间复杂度，而增加指定大小的容量只能达到O(n)的时间复杂度，因此，使用成倍的方式扩容。
 
-
-
 ### map/set
 
 #### map 中[] 与 find 的区别？
@@ -391,23 +433,13 @@ mapStudent.insert(make_pair(1, "student_one"));
 mapStudent[1] = "student_one"; 
 ```
 
-
-
-
-
 #### STL中unordered_map和map的区别和应用场景
 
 map支持键值的自动排序，底层机制是红黑树，红黑树的查询和维护时间复杂度均为O(logn)，但是空间占用比较大，因为每个节点要保持父节点、孩子节点及颜色的信息
 
- 
-
 unordered_map是C++ 11新添加的容器，底层机制是哈希表，通过hash函数计算元素位置，其查询时间复杂度为O(1)，维护时间与bucket桶所维护的list长度有关，但是建立hash表耗时较大
 
- 
-
 从两者的底层机制和特点可以看出：map适用于有序数据的应用场景，unordered_map适用于高效查询的应用场景
-
-
 
 #### map 的实现
 
@@ -420,8 +452,6 @@ map的特性是所有元素会根据键值进行自动排序。map中所有的�
 ![img](https://cdn.jsdelivr.net/gh/forthespada/mediaImage1@1.6.4.2/202102/1566380621064.png)
 
 map的在构造时缺省采用递增排序key，也使用alloc配置器配置空间大小，需要注意的是在插入元素时，调用的是红黑树中的insert_unique()方法，而非insert_euqal()（multimap使用）
-
-
 
 需要注意的是subscript（下标）操作既可以作为左值运用（修改内容）也可以作为右值运用（获取实值）。例如：
 
@@ -459,8 +489,6 @@ pair第一个元素是迭代器，指向当前插入的新元素，如果插入�
 
 由于这个实值是以引用方式传递，因此作为左值或者右值都可以
 
-
-
 #### set 如何实现
 
 STL中的容器可分为序列式容器（sequence）和关联式容器（associative），set属于关联式容器。
@@ -471,10 +499,10 @@ set不允许迭代器修改元素的值，其迭代器是一种constance iterato
 
 标准的STL set以RB-tree（红黑树）作为底层机制，几乎所有的set操作行为都是转调用RB-tree的操作行为，这里补充一下红黑树的特性：
 
-- 每个节点不是红色就是黑色
-- 根结点为黑色
-- 如果节点为红色，其子节点必为黑
-- 任一节点至（NULL）树尾端的任何路径，所含的黑节点数量必相同
+* 每个节点不是红色就是黑色
+* 根结点为黑色
+* 如果节点为红色，其子节点必为黑
+* 任一节点至（NULL）树尾端的任何路径，所含的黑节点数量必相同
 
 关于红黑树的具体操作过程，比较复杂读者可以翻阅《算法导论》详细了解。
 
@@ -525,8 +553,6 @@ int main()
 
 关联式容器尽量使用其自身提供的find()函数查找指定的元素，效率更高，因为STL提供的find()函数是一种顺序搜索算法。
 
-
-
 #### map、set是怎么实现的，红黑树是怎么能够同时实现这两种容器？
 
 \1) 他们的底层都是以红黑树的结构实现，因此插入删除等操作都在O(logn时间内完成，因此可以完成高效的插入删除；
@@ -534,8 +560,6 @@ int main()
 \2) 在这里我们定义了一个模版参数，如果它是key那么它就是set，如果它是map，那么它就是map；底层是红黑树，实现map的红黑树的节点数据类型是key+value，而实现set的节点数据类型是value
 
 \3) 因为map和set要求是自动排序的，红黑树能够实现这一功能，而且时间复杂度比较低。
-
-
 
 #### set和map的区别，multimap和multiset的区别
 
@@ -547,59 +571,29 @@ map则提供两种数据类型的接口，分别放在key和value的位置上，
 
 multimap和map的唯一区别就是：multimap调用的是红黑树的insert_equal(),可以重复插入而map调用的则是独一无二的插入insert_unique()，multiset和set也一样，底层实现都是一样的，只是在插入的时候调用的方法不一样。
 
-
-
-
-
 ### unordered_map
 
 #### STL中hash_map扩容发生什么？
 
-\1) hash table表格内的元素称为桶（bucket),而由桶所链接的元素称为节点（node),其中存入桶元素的容器为stl本身很重要的一种序列式容器——vector容器。之所以选择vector为存放桶元素的基础容器，主要是因为vector容器本身具有动态扩容能力，无需人工干预。
+hash table表格内的元素称为桶（bucket),而由桶所链接的元素称为节点（node),其中存入桶元素的容器为stl本身很重要的一种序列式容器——vector容器。之所以选择vector为存放桶元素的基础容器，主要是因为vector容器本身具有动态扩容能力，无需人工干预。
 
- 
-
-\2) 向前操作：首先尝试从目前所指的节点出发，前进一个位置（节点），由于节点被安置于list内，所以利用节点的next指针即可轻易完成前进操作，如果目前正巧是list的尾端，就跳至下一个bucket身上，那正是指向下一个list的头部节点。
-
-
+ 向前操作：首先尝试从目前所指的节点出发，前进一个位置（节点），由于节点被安置于list内，所以利用节点的next指针即可轻易完成前进操作，如果目前正巧是list的尾端，就跳至下一个bucket身上，那正是指向下一个list的头部节点。
 
 #### STL中unordered_map和map的区别，hash_map如何解决冲突以及扩容
 
-\1) unordered_map和map类似，都是存储的key-value的值，可以通过key快速索引到value。不同的是unordered_map不会根据key的大小进行排序，
+**区别**
 
- 
+* unordered_map和map类似，都是存储的key-value的值，可以通过key快速索引到value。不同的是unordered_map不会根据key的大小进行排序，
+* 存储时是根据key的hash值判断元素是否相同，即unordered_map内部元素是无序的，而map中的元素是按照二叉搜索树存储，进行中序遍历会得到有序遍历。
+* 所以使用时map的key需要定义operator<。而unordered_map需要定义hash_value函数并且重载operator==。但是很多系统内置的数据类型都自带这些，
+* 那么如果是自定义类型，那么就需要自己重载operator<或者hash_value()了。
+* 如果需要内部元素自动排序，使用map，不需要排序使用unordered_map
+* unordered_map的底层实现是hash_table;
+* hash_map底层使用的是hash_table，而hash_table使用的开链法进行冲突避免，所有hash_map采用开链法进行冲突解决。
 
-\2) 存储时是根据key的hash值判断元素是否相同，即unordered_map内部元素是无序的，而map中的元素是按照二叉搜索树存储，进行中序遍历会得到有序遍历。
+**什么时候扩容：**当向容器添加元素的时候，会判断当前容器的元素个数，如果大于等于阈值---即当前数组的长度乘以加载因子的值的时候，就要自动扩容啦。
 
- 
-
-\3) 所以使用时map的key需要定义operator<。而unordered_map需要定义hash_value函数并且重载operator==。但是很多系统内置的数据类型都自带这些，
-
- 
-
-\4) 那么如果是自定义类型，那么就需要自己重载operator<或者hash_value()了。
-
- 
-
-\5) 如果需要内部元素自动排序，使用map，不需要排序使用unordered_map
-
- 
-
-\6) unordered_map的底层实现是hash_table;
-
- 
-
-\7) hash_map底层使用的是hash_table，而hash_table使用的开链法进行冲突避免，所有hash_map采用开链法进行冲突解决。
-
- 
-
-\8) **什么时候扩容：**当向容器添加元素的时候，会判断当前容器的元素个数，如果大于等于阈值---即当前数组的长度乘以加载因子的值的时候，就要自动扩容啦。
-
- 
-
-\9) **扩容(resize)**就是重新计算容量，向HashMap对象里不停的添加元素，而HashMap对象内部的数组无法装载更多的元素时，对象就需要扩大数组的长度，以便能装入更多的元素。
-
-
+**扩容(resize)**就是重新计算容量，向HashMap对象里不停的添加元素，而HashMap对象内部的数组无法装载更多的元素时，对象就需要扩大数组的长度，以便能装入更多的元素。
 
 #### unordered_map 的实现
 
@@ -611,15 +605,11 @@ hashtable中的bucket所维护的list既不是list也不是slist，而是其自�
 
 在hashtable设计bucket的数量上，其内置了28个质数[53, 97, 193,...,429496729]，在创建hashtable时，会根据存入的元素个数选择大于等于元素个数的质数作为hashtable的容量（vector的长度），其中每个bucket所维护的linked-list长度也等于hashtable的容量。如果插入hashtable的元素个数超过了bucket的容量，就要进行重建table操作，即找出下一个质数，创建新的buckets vector，重新计算元素在新hashtable的位置。
 
-
+有一条规则是：**当元素的个数大于buckets的空间个数时，就会把buckets成2倍扩增，然后再调整为质数。这样重新计算后可以很好地把长链变短。**
 
 #### hashtable 解决冲突有哪些方法
 
-------
-
-**记住前三个：**
-
-线性探测
+**线性探测**
 
 使用hash函数计算出的位置如果已经有元素占用了，则向后依次寻找，找到表尾则回到表头，直到找到一个空位
 
@@ -639,7 +629,7 @@ hashtable中的bucket所维护的list既不是list也不是slist，而是其自�
 
 一旦hash函数计算的结果相同，就放入公共溢出区
 
-
+#### 如何优化哈希表
 
 ### priority_queue
 
@@ -722,8 +712,6 @@ int main()
 }
 ```
 
-
-
 priority_queue，优先队列，是一个拥有权值观念的queue，它跟queue一样是顶部入口，底部出口，在插入元素时，元素并非按照插入次序排列，它会自动根据权值（通常是元素的实值）排列，权值最高，排在最前面，如下图所示。
 
 ![img](https://cdn.jsdelivr.net/gh/forthespada/mediaImage1@1.6.4.2/202102/1566126001158.png)
@@ -783,8 +771,6 @@ int main()
 }
 ```
 
-
-
 ### list/stack/queue/forward_list
 
 #### list的实现
@@ -810,10 +796,6 @@ struct __list_node{
 list的空间管理默认采用alloc作为空间配置器，为了方便的以节点大小为配置单位，还定义一个list_node_allocator函数可一次性配置多个节点空间
 
 由于list的双向特性，其支持在头部（front)和尾部（back)两个方向进行push和pop操作，当然还支持erase，splice，sort，merge，reverse，sort等操作，这里不再详细阐述。
-
-
-
-
 
 #### STL中stack和queue的实现
 
@@ -874,8 +856,6 @@ public:
 从queue的数据结构可以看出，其所有操作都也都是是围绕Sequence完成，Sequence默认也是deque数据结构。queue也是一类container adapter。
 
 同样，queue也可以使用list作为底层容器，不具有遍历功能，没有迭代器。
-
-
 
 #### forward_list  的实现
 
@@ -962,33 +942,19 @@ int main()
 
 需要注意的是C++标准委员会没有采用slist的名称，forward_list在C++ 11中出现，它与slist的区别是没有size()方法。
 
-
-
 #### STL中list、dqueue、vector 之间的区别
 
 \1) list不再能够像vector一样以普通指针作为迭代器，因为其节点不保证在存储空间中连续存在；
 
- 
-
 \2) list插入操作和结合才做都不会造成原有的list迭代器失效;
-
- 
 
 \3) list不仅是一个双向链表，而且还是一个环状双向链表，所以它只需要一个指针；
 
- 
-
 \4) list不像vector那样有可能在空间不足时做重新配置、数据移动的操作，所以插入前的所有迭代器在插入操作之后都仍然有效；
-
- 
 
 \5) deque是一种双向开口的连续线性空间，所谓双向开口，意思是可以在头尾两端分别做元素的插入和删除操作；可以在头尾两端分别做元素的插入和删除操作；
 
- 
-
 \6) deque和vector最大的差异，一在于deque允许常数时间内对起头端进行元素的插入或移除操作，二在于deque没有所谓容量概念，因为它是动态地以分段连续空间组合而成，随时可以增加一段新的空间并链接起来，deque没有所谓的空间保留功能。
-
-
 
 \1) vector数据结构 vector和数组类似，拥有一段连续的内存空间，并且起始地址不变。因此能高效的进行随机存取，时间复杂度为o(1);但因为内存空间是连续的，所以在进行插入和删除操作时，会造成内存块的拷贝，时间复杂度为o(n)。
 
@@ -1000,18 +966,16 @@ int main()
 
 区别：
 
-- vector的随机访问效率高，但在插入和删除时（不包括尾部）需要挪动数据，不易操作。
-- list的访问要遍历整个链表，它的随机访问效率低。但对数据的插入和删除操作等都比较方便，改变指针的指向即可。
-- 从遍历上来说，list是单向的，vector是双向的。
-- vector中的迭代器在使用后就失效了，而list的迭代器在使用之后还可以继续使用。
+* vector的随机访问效率高，但在插入和删除时（不包括尾部）需要挪动数据，不易操作。
+* list的访问要遍历整个链表，它的随机访问效率低。但对数据的插入和删除操作等都比较方便，改变指针的指向即可。
+* 从遍历上来说，list是单向的，vector是双向的。
+* vector中的迭代器在使用后就失效了，而list的迭代器在使用之后还可以继续使用。
 
 3)
 
 int mySize = vec.size();vec.at(mySize -2);
 
 list不提供随机访问，所以不能用下标直接访问到某个位置的元素，要访问list里的元素只能遍历，不过你要是只需要访问list的最后N个元素的话，可以用反向迭代器来遍历：
-
-
 
 ### deque
 
