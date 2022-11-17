@@ -18,7 +18,6 @@
 
 * 谈谈仿函数
 
-
 ### 空间配置器
 
 STL中的allocator、deallocator
@@ -31,26 +30,46 @@ allocator 的作用
 
 ### 迭代器
 
-* 说一下STL每种容器对应的迭代器
-* STL迭代器如何实现
+* STL 每种容器的迭代器种类
+* STL 迭代器如何实现
 * 迭代器失效的情况
 * 迭代器：++it、it++哪个好，为什么
-* 迭代器的种类
+
+
 
 <https://blog.csdn.net/daaikuaichuan/article/details/80717222#t1>
 
 ### vector
 
 * 函数里的vector存在堆上还是栈上，为什么？
+
 * 定义了一个vector, 内存是如何管控的， 放在哪里（讲了动态内存， 后面被打断， 想问的是两个阶段的分配地址， 第一个是在连接过程中的重定位， 一个是加载到内存的物理地址
+
 * vector扩容后会做哪些操作vector扩容后把旧空间的数据搬到新空间用拷贝构造还是移动构造
+
 * 什么时候用vector,什么时候用list，有什么区别
+
 * vector 的实现？
+
 * vector的增加删除都是怎么做的？为什么是1.5或者是2倍？为什么不是固定增加
+
 * vector如何释放空间?clear,swap,shrink_to_fit
+
 * `vector<bool>` 有什么问题？
+
 * `vector<void>` 合理吗
-* 元素类型可以是引用吗
+
+* `vector` 元素类型可以是引用吗？
+
+* 线程安全 `vector` 设计
+
+* `vector` 作为函数返回值
+
+* `emplace_back` 和 `push_back`
+
+* 一个 `vector` 内存很大但实际我只用了很小一部分怎么解决
+
+	
 
 ### map/set
 
@@ -91,6 +110,7 @@ allocator 的作用
 ### deque
 
 * deque 的实现
+* deque 和 vector 的区别
 
 ## 回答
 
@@ -199,7 +219,7 @@ STL 内存池
 
 ### 迭代器
 
-#### 说一下STL每种容器对应的迭代器
+#### STL 每种容器的迭代器种类
 
 | 容器                                   | 迭代器         |
 | -------------------------------------- | -------------- |
@@ -208,7 +228,53 @@ STL 内存池
 | list、(multi)set/map                   | 双向迭代器     |
 | unordered_(multi)set/map、forward_list | 前向迭代器     |
 
+- 前向迭代器（forward iterator）
+
+	则 p 支持 ++p，p++，*p 操作，还可以被复制或赋值，可以用 == 和 != 运算符进行比较。
+
+- 双向迭代器（bidirectional iterator）
+
+	双向迭代器具有正向迭代器的全部功能，除此之外，假设 p 是一个双向迭代器，则还可以进行 --p 或者 p-- 操作（即一次向后移动一个位置）。
+
+- 随机访问迭代器（random access iterator）
+
+	随机访问迭代器具有双向迭代器的全部功能。除此之外，假设 p 是一个随机访问迭代器，i 是一个整型变量或常量，则 p 还支持以下操作：
+
+	1. p+=i：使得 p 往后移动 i 个元素。
+	2. p-=i：使得 p 往前移动 i 个元素。
+	3. p+i：返回 p 后面第 i 个元素的迭代器。
+	4. p-i：返回 p 前面第 i 个元素的迭代器。
+	5. p[i]：返回 p 后面第 i 个元素的引用。
+
+- 输入迭代器 (input iterator)
+
+	可用于读取容器中的元素，但是不保证能支持容器的写入操作。
+
+	只支持自增运算
+
+- 输出迭代器 (output iterator)
+
+	可视为与输入迭代器功能互补的迭代器；
+
+	输出迭代器可用于向容器写入元素，但是不保证能支持读取容器内容。
+
+	只支持自增运算
+
+
+
+
+
 #### STL迭代器如何实现
+
+迭代器实际上是对“遍历容器”这一操作进行了封装。
+
+在编程中我们往往会用到各种各样的容器，但由于这些容器的底层实现各不相同，所以对他们进行遍历的方法也是不同的。例如，数组使用指针算数就可以遍历，但链表就要在不同节点直接进行跳转。c++我觉得是一门非常讲究方便的语言，显然这种情况是不能够出现的。
+
+因此就出现了迭代器，将遍历容器的操作封装起来，可以针对所有容器进行遍历。重载了，->, * , ++, --等操作符
+
+
+
+
 
 1、 迭代器是一种抽象的设计理念，通过迭代器可以在不了解容器内部原理的情况下遍历容器，除此之外，STL中迭代器一个最重要的作用就是作为容器与STL算法的粘合剂。
 
@@ -412,11 +478,372 @@ void resize(size_type __new_size, const _Tp& __x) {
 
 对比可以发现采用采用成倍方式扩容，可以保证常数的时间复杂度，而增加指定大小的容量只能达到O(n)的时间复杂度，因此，使用成倍的方式扩容。
 
+
+
+#### `vector` 元素类型可以是引用吗？
+
+vector中的元素有两个要求：
+
+1. 元素必须能赋值
+2. 元素必须能复制
+
+对于类类型来说，需要拷贝构造和赋值运算符支持，对于像map，set这种容器需要重载运算符<的支持，而引用是必须初始化的，指向一个特定对象，本质上是一个常量指针，因此引用是不能复制，意味着容器的拷贝复制就失效了
+
+容器开辟的时候还没有值，无法初始化，你咋能用引用
+
+
+
+#### 线程安全 vector 设计
+
+众所周知，C++标准库中的vector不保证线程安全。当我们在并发读写vector时，往往会面临两方面的风险：
+
+1. 内容读取异常：例如两个线程一个在读，一个在写，或者两个线程同时在写，都会导致单个数据内部出现不一致的情况。
+2. vector扩容时，内存位置发生改变导致Segmentation fault错误。因为vector在扩容时会将内容全部拷贝到新的内存区域中，原有的内存区域被释放，此时如果有线程依然在向旧的内存区域读或写就会出问题。
+
+通过固定vector的大小，避免动态扩容（无push_back）来做到lock-free！即在开始并发读写之前（比如初始化）的时候，给vector设置好大小。代码如下：
+
+```c++
+vector<int> v;
+v.resize(1000);
+```
+
+注意是resize，不是reserve！
+
+
+
+举一个简单的例子：
+
+```cpp
+vector<int> vec;
+void add_vector(int range, unsigned int seed){
+    srand(seed);
+    for(int i = 0 ; i < range; i++){
+        vec.push_back(rand());
+    }
+}
+int main(){
+    vec.reserve(100);
+    thread t1 = thread(add_vector, 1000, 2);
+    thread t2 = thread(add_vector, 1000, 1);
+
+    t1.join();
+    t2.join();
+}
+```
+
+两个线程都在向vec中添加元素，如果没有任何处理，很容易崩溃，就是因为第二个原因。而这种并发写的情况，在很多业务场景中都是很可能出现的，例如：在推荐系统中，为了提高运算效率每个线程都按照不同的策略生产推荐召回，这些线程产生召回后就会向同一个数组中合并。然后根据这些召回中选出最好的推荐结果。
+
+在文章中提出了三种向vector并发添加元素的方案，目的是保证多线程并发条件下能正确向vector中。项目放在了[safe_vector](https://link.segmentfault.com/?enc=2ml8QZTyk2bSInLiXfugIw%3D%3D.qAuCcyYJ1z8u5e7tQ%2FYH2LsjVjMaN9fnynhpzNoZ8HzZ249l4loQ8LxmNcU%2BjPd0)。
+
+##### **多线程安全的vector设计---有锁的设计**
+
+对于解决并发问题中的最简单的设计就是加锁。在这里我们使用标准库为我们提供的mutex来对push_back临界区加锁。
+
+```reasonml
+template<typename T>
+class lock_vector{
+    std::mutex mlock;
+    vector<T> mvec;
+
+public:
+    T operator[](unsigned int idx){
+        return mvec[idx];
+    }
+    lock_vector()=default;
+    lock_vector(lock_vector<T>& vec){
+         vec.getVector(mvec);
+    };
+    lock_vector(lock_vector<T>&& vec){
+        vec.getVector(mvec);
+    };
+
+    void push_back(const T& value) noexcept{
+        mlock.lock();
+        mvec.push_back(value);
+        mlock.unlock();
+    }
+
+    void getVector(vector<T> & res){
+        res = mvec;
+    }
+};
+```
+
+##### **多线程安全的vector设计---无锁设计**
+
+除了使用互斥锁，还可以通过无锁的设计来实现线程同步。其中一种常见的思路就是CAS(compare-and-swap)。C++的原子变量（atomic）就提供了compare_exchange_weak和compare_exchange_strong来实现CAS机制。下面的代码是基于CAS实现的多线程安全方案。
+
+```cpp
+template<typename T>
+class cas_vector{
+    std::atomic<bool> flag;
+    vector<T> mvec;
+
+    void lock(){
+        bool expect = false;
+        while(!flag.compare_exchange_weak(expect, true)){
+            expect = false;
+        }
+    }
+
+    void unlock(){
+        flag.store(false);
+    }
+
+public:
+    T operator[](unsigned int idx){
+        return mvec[idx];
+    }
+    cas_vector(){
+        flag.store(false);
+    };
+    cas_vector(const cas_vector& vec){
+        mvec = vec;
+        flag.store(false);
+    };
+    cas_vector(cas_vector&& vec){
+        mvec = vec;
+        flag.store(false);
+    };
+
+    void replace(const int idx, const T& value) noexcept{
+        lock();
+        mvec[idx] = value;
+        unlock();
+    }
+
+    void push_back(const T& value) noexcept{
+        lock();
+        mvec.push_back(value);
+        unlock();
+    }
+};
+```
+
+
+
+##### **多线程安全的vector设计---借助thread_local变量**
+
+thread_local变量简介
+
+thread_local是C++11之后才引入的关键字。thread_local变量与其所在线程同步创建和销毁，并且只能被创建它的线程所访问，也就是说thread_local变量是线程安全的。每个线程在自身TIB(Thread Information Block)中存储thread_local变量的副本。
+
+基于thread_local变量实现的方案
+
+该方案的代码实现如下，vector_thl就是多线程添加元素安全的类型。在我的实现中，每个类分别存在两个vector，一个是thread_local类型，每次调用push_back时，都会向其中添加元素。因为该变量在每个线程中都存在一个副本，因此不需要进行线程同步，但同时，为了获取最终结果，必须将这些分散在各个线程的副本合并到一起。因此在vector_thl增加了merge接口来合并这些线程局部的vector。
+
+```cpp
+template<typename T>
+class vector_thl{
+    vector<T> mvec;
+    mutex lock;
+public:
+
+    thread_local static vector<T> vec;
+
+    vector_thl()=default;
+    vector_thl(const vector_thl& vec){
+        mvec = vec;
+        vec = vec;
+    };
+    vector_thl(vector_thl&& vec){
+        mvec = vec;
+        vec = vec;
+    };
+
+
+    void push_back(const T& value) noexcept{
+        vec.push_back(value);
+    }
+
+    void merge(){
+        mvec.insert(mvec.end(), vec.begin(), vec.end());
+    }
+
+    void getVector(vector<T>& res){
+        res = mvec;
+    }
+};
+
+template<typename T>
+thread_local vector<T> vector_thl<T>::vec(0);
+```
+
+##### 性能比较
+
+对三种实现方案进行基准测试，得到以下结果：
+
+```asciidoc
+Run on (12 X 2994.27 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x6)
+  L1 Instruction 32 KiB (x6)
+  L2 Unified 512 KiB (x6)
+  L3 Unified 4096 KiB (x1)
+Load Average: 0.00, 0.09, 0.22
+--------------------------------------------------------
+Benchmark              Time             CPU   Iterations
+--------------------------------------------------------
+BM_VEC_LOC/10    4574464 ns      1072230 ns          639
+BM_VEC_LOC/2     6627843 ns       176688 ns         1000
+BM_VEC_CAS/10    9280705 ns      1027921 ns          683
+BM_VEC_CAS/2     7537580 ns       180541 ns         1000
+BM_VEC_THL/10    1108654 ns       993997 ns          687
+BM_VEC_THL/2      693148 ns       123333 ns         5723
+```
+
+可见借助thread_local实现的方案是运行效率最高的，大概是互斥方案的4倍，是无锁方案的8倍。同时也是CPU利用效率最高的方案。
+
+##### 总结
+
+在文章中我们实现了三种多线程并发添加元素安全的vector。其中利用thread_local实现的方案效率最高，主要原因是thread_local变量在每个线程中都有一个副本，不会并发写，避免了锁竞争。
+
+然而这种方案并非完美，由于每个线程的thread_local变量都是不完整的，因此在添加元素阶段并不能正确的读取元素，只有在每个添加元素的线程都讲元素合并到之后才能进行读。
+
+#### vector 作为函数返回值
+
+1. 在C++11中提供了RVO/NRVO机制可以防止这种重复拷贝开销。另一种是RVO/NRVO机制实现复制消除机制。
+2. RVO机制使用父栈帧（或任意内存块）来分配返回值的空间，来避免对返回值的复制。也就是将Base fun();改为void fun(Base &x);
+
+作者：spiritsaway
+链接：https://www.zhihu.com/question/27000013/answer/34846612
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+
+根据effective modern c++中介绍，编译器进行RVO条件有二
+
+1. return 的值类型与 [函数签名](https://www.zhihu.com/search?q=函数签名&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A"34846612"})的返回值类型相同
+2. return的是一个局部对象
+
+现在我们来考虑下面这个语句
+
+
+
+```cpp
+return std::move(w)
+```
+
+此时返回的并不是一个局部对象，而是局部对象的[右值引用](https://www.zhihu.com/search?q=右值引用&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A"34846612"})。编译器此时无法进行rvo优化，能做的只有根据std::move(w)来移动构造一个临时对象，然后再将该临时对象赋值到最后的目标。所以，不要试图去返回一个局部对象的右值引用。
+
+下面来谈一下右值引用与函数之间的关系。
+
+第一个例子：
+
+```cpp
+std::vector<int> return_vector(void)
+{
+    std::vector<int> tmp {1,2,3,4,5};
+    return tmp;
+}
+std::vector<int> &&rval_ref = return_vector();
+```
+
+此时，并不调用RVO，拷贝构造临时对象，同时临时对象的生命周期延长至与rval_ref相同，等价于下面的代码
+
+
+
+```cpp
+const std::vector<int>& rval_ref = return_vector();
+```
+
+
+
+第二个例子：
+
+```cpp
+std::vector<int>&& return_vector(void)
+{
+    std::vector<int> tmp {1,2,3,4,5};
+    return std::move(tmp);
+}
+
+std::vector<int> &&rval_ref = return_vector();
+```
+
+
+
+该代码会造成一个运行时错误，因为rval_ref最终指向被析构了的tmp 。类似于返回了内部对象的[左值引用](https://www.zhihu.com/search?q=左值引用&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A"34846612"})。
+
+第三个例子：
+
+
+
+```cpp
+std::vector<int> return_vector(void)
+{
+    std::vector<int> tmp {1,2,3,4,5};
+    return std::move(tmp);
+}
+std::vector<int> &&rval_ref = return_vector();
+```
+
+该例子类似于第一个例子，只不过临时对象的构造是由右值移动构造的。
+
+最好的例子：
+
+
+
+```cpp
+std::vector<int> return_vector(void)
+{
+    std::vector<int> tmp {1,2,3,4,5};
+    return tmp;
+}
+std::vector<int> rval_ref = return_vector();
+```
+
+该代码会调用RVO，不生成临时对象 ，[返朴归真](https://www.zhihu.com/search?q=返朴归真&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A"34846612"})了。
+
+
+
+#### emplace_back和push_back
+
+**push_back**
+
+使用push_back()向容器中加入一个右值元素（临时对象）的时候，首先会调用构造函数构造这个临时对象，然后需要调用移动构造函数或拷贝构造函数将这个临时对象放入容器中。原来的临时变量释放。这样造成的问题是临时变量申请的资源就浪费。push_back() 在底层实现时，会优先选择调用移动构造函数，如果没有才会调用拷贝构造函数。
+
+**emplace_back**
+
+```c++
+template <class... Args>
+void emplace_back (Args&&... args);
+```
+
+在容器尾部添加一个元素，这个元素原地构造，不需要触发移动构造。
+
+
+
+#### 一个vetor内存很大但实际我只用了很小一部分怎么解决
+
+swap
+
+
+
+#### 函数里的vector存在堆上还是栈上，为什么？
+
+无论你的定义是：
+`vector<int*> *p = new vector<int*>`;
+还是
+`vector<int*> p`
+其元素都是在堆上进行分配。
+
+C++语言中，所有`new`和`malloc`创建的变量均存放在堆区，这已经是一个共识。但是鲜为人知的是，STL库中的容器虽没有经过这两个关键字创建，但同样是存放在堆区。这与动态数组性质相同。如果从汇编角度观察便会发现，容器均调用了`allocator`来创建。
+
+vector就是在堆上的，底层由allocator去维护，所以函数退出时，普通定义的vector也可以由allocator自动回收
+
+
+
+std::vector的默认实现是把内部数据分配在堆上，所以vector对象本身不需要再用new。vector对象本身不大
+
+实际上，不论你怎么对vector进行push_back()，sizeof(vector)的值永远都不会变，变的只是vector的size() 因为在c++中，一个变量的类型，就表明了这个变量在内存中占用字节的大小，只要变量类型不变，sizeof()就不会变，而变量的类型是不允许改变的，因此vector自身是不能改变自身的大小的 vector只是一个实现了动态内存管理内存的类，它通过构造函数在堆上创建真正用于储存数据的对象并通过析构函数在堆上销毁储存数据的对象，那么你对vector进行push_back()的时候，都是在对这个储存数据的对象进行修改 因此你根本就不必用new来申请内存，可以理解为vector内部已经这么做了(事实上vector使用的是allocator 来申请内存的)，它只是做了一个简单包装，让你用起来更方便而已
+
 ### map/set
 
 #### map 中[] 与 find 的区别？
 
-* map的下标运算符[]的作用是：将关键码作为下标去执行查找，并返回对应的值；如果不存在这个关键码，就将一个具有该关键码和值类型的默认值的项插入这个map。
+* map的下标运算符[]的作用是：将关键码作为下标去执行查找，并返回对应的值；**如果不存在这个关键码，就将一个具有该关键码和值类型的默认值的项插入这个map**。
 
 * map的find函数：用关键码执行查找，找到了返回该位置的迭代器；如果不存在这个关键码，就返回尾迭代器。
 
@@ -560,6 +987,16 @@ int main()
 \2) 在这里我们定义了一个模版参数，如果它是key那么它就是set，如果它是map，那么它就是map；底层是红黑树，实现map的红黑树的节点数据类型是key+value，而实现set的节点数据类型是value
 
 \3) 因为map和set要求是自动排序的，红黑树能够实现这一功能，而且时间复杂度比较低。
+
+
+
+为不用二叉搜索树：高度越小越好，BST这种有特殊情况，比如只有左子树有值，导致O(n)复杂度
+
+
+
+为什么不用 AVL 树：对于STL中的set和map来说，需要进行频繁的插入和删除，而AVL这种严格平衡二叉树，插入删除太频繁会导致左旋右旋操作频繁，影响性能，AVL只适合查找较多但插入、删除不多的操作。而红黑树也是一种平衡二叉树，但只要求最长路径不超过最短路径的两倍，因此，更适合插入、删除操作较多的结构。
+
+
 
 #### set和map的区别，multimap和multiset的区别
 
@@ -1032,3 +1469,22 @@ struct __deque_iterator
 ![img](https://cdn.jsdelivr.net/gh/forthespada/mediaImage1@1.6.4.2/202102/1565877658970.png)
 
 deque迭代器的“++”、“--”操作是远比vector迭代器繁琐，其主要工作在于缓冲区边界，如何从当前缓冲区跳到另一个缓冲区，当然deque内部在插入元素时，如果map中node数量全部使用完，且node指向的缓冲区也没有多余的空间，这时会配置新的map（2倍于当前+2的数量）来容纳更多的node，也就是可以指向更多的缓冲区。在deque删除元素时，也提供了元素的析构和空闲缓冲区空间的释放等机制。
+
+
+
+#### deque 和 vector 的区别
+
+- vector是单向开口的连续区间，deque是双向开口的连续区间（可以在头尾两端进行插入和删除操作）
+- deque没有提供空间保留功能，也就是没有capacity这个概念，而vector提供了空间保留功能。即vector有capacity和reserve函数，deque 和 list一样，没有这两个函数。
+
+deque是在功能上合并了vector和list。
+
+**优点：**
+
+1. 随机访问方便，即支持[ ]操作符和vector.at()
+
+2. 在内部方便的进行插入和删除操作
+
+3. 可在两端进行push、pop
+
+缺点：占用内存多
