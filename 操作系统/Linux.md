@@ -61,8 +61,6 @@ https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9
 
 
 
-![image-20200326162329550](file://H:\JAVA\Markdown%E7%AC%94%E8%AE%B0\Linux%E9%97%AE%E9%A2%98\img\image-20200326162329550.png?lastModify=1631087466)
-
 - 进程信息
 
   - 在top命令中按f按可以查看显示的列信息，按对应字母来开启/关闭列，大写字母表示开启，小写字母表示关闭。带*号的是默认列。
@@ -74,8 +72,8 @@ https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9
     H: PR = (Priority) 优先级
     I: NI = (Nice value) nice值。负值表示高优先级，正值表示低优先级
     O: VIRT = (Virtual Image (kb)) 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES
-    Q: RES = (Resident size (kb)) 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA
-    T: SHR = (Shared Mem size (kb)) 共享内存大小，单位kb
+    **Q: RES = (Resident size (kb)) 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA**
+    **T: SHR = (Shared Mem size (kb)) 共享内存大小，单位kb**
     W: S = (Process Status) 进程状态。D=不可中断的睡眠状态,R=运行,S=睡眠,T=跟踪/停止,Z=僵尸进程
     K: %CPU = (CPU usage) 上次更新到现在的CPU时间占用百分比
     N: %MEM = (Memory usage (RES)) 进程使用的物理内存百分比
