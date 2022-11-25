@@ -1,6 +1,6 @@
 # GDB
 
-https://github.com/hellogcc/100-gdb-tips
+<https://github.com/hellogcc/100-gdb-tips>
 
 ### 信息显示
 
@@ -54,8 +54,6 @@ https://github.com/hellogcc/100-gdb-tips
 next和nexti(即n和ni)是下一条，不进入函数内部，比如说在某一行发生了函数调用，next/nexti就继续到下一行。next是在源码层面的下一行，而nexti就是机器指令层面的，单步到下一个机器指令。
 
 step和stepi(即s和si)就是单步步入，进入函数内部，比如说在某一行发生了函数调用，step/stepi就会进入函数体内部，把函数体执行一遍，再返回执行下一条指令。同理，step是在源码层面的操作指令，stepi是在机器指令层面的。
-
-
 
 #### [进入不带调试信息的函数](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-step-mode-on.md)
 
@@ -287,8 +285,6 @@ Stack level 2, frame at 0x7fffffffe590:
 #### [向上或向下切换函数堆栈帧](https://github.com/hellogcc/100-gdb-tips/blob/master/src/up-down-select-frame.md)
 
 用gdb调试程序时，当程序暂停后，可以用“`up n`”或“`down n`”命令向上或向下选择函数堆栈帧，其中`n`是层数
-
-
 
 ### 断点
 
@@ -670,21 +666,21 @@ Value = 1
 
 ### CatchPoint
 
-- [让catchpoint只触发一次](https://github.com/hellogcc/100-gdb-tips/blob/master/src/tcatch.md)
-- [为fork调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-fork.md)
-- [为vfork调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-vfork.md)
-- [为exec调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-exec.md)
-- [为系统调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-syscall.md)
-- [通过为ptrace调用设置catchpoint破解anti-debugging的程序](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-ptrace.md)
+* [让catchpoint只触发一次](https://github.com/hellogcc/100-gdb-tips/blob/master/src/tcatch.md)
+* [为fork调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-fork.md)
+* [为vfork调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-vfork.md)
+* [为exec调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-exec.md)
+* [为系统调用设置catchpoint](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-syscall.md)
+* [通过为ptrace调用设置catchpoint破解anti-debugging的程序](https://github.com/hellogcc/100-gdb-tips/blob/master/src/catch-ptrace.md)
 
 ### 打印
 
-- [打印ASCII和宽字符字符串](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-ascii-and-wide-string.md)
-- [打印STL容器中的内容](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-STL-container.md)
-- [打印大数组中的内容](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-large-array.md)
-- [打印数组中任意连续元素值](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-consecutive-array-elements.md)
-- [打印数组的索引下标](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-array-indexes.md)
-- [格式化打印数组](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-formatted-array.md)
+* [打印ASCII和宽字符字符串](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-ascii-and-wide-string.md)
+* [打印STL容器中的内容](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-STL-container.md)
+* [打印大数组中的内容](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-large-array.md)
+* [打印数组中任意连续元素值](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-consecutive-array-elements.md)
+* [打印数组的索引下标](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-array-indexes.md)
+* [格式化打印数组](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-formatted-array.md)
 
 #### [打印函数局部变量的值](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-local-variables.md)
 
@@ -780,7 +776,6 @@ Mapped address spaces:
 
 首先输出了进程的flags，接着是进程的内存映射信息。
 
-
 此外，也可以用"i files"（还有一个同样作用的命令：“i target”）命令，它可以更详细地输出进程的内存信息，包括引用的动态链接库等等，例如：
 
 ```
@@ -803,7 +798,7 @@ Local exec file:
     0x08050890 - 0x080508c8 is .rel.plt
     0x080508c8 - 0x08050948 is .plt
     ......
-	0xfef5fb58 - 0xfef5fc48 is .dynamic in /usr/lib/libc.so.1
+ 0xfef5fb58 - 0xfef5fc48 is .dynamic in /usr/lib/libc.so.1
     0xfef5fc80 - 0xfef650e2 is .data in /usr/lib/libc.so.1
     0xfef650e2 - 0xfef650e2 is .bssf in /usr/lib/libc.so.1
     0xfef650e8 - 0xfef65be0 is .picdata in /usr/lib/libc.so.1
@@ -947,11 +942,11 @@ c）u：标明一个单元的长度。`b`是一个`byte`，`h`是两个`byte`（
 (gdb) l 1,10
 ```
 
-- [每行打印一个结构体成员](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-print-pretty-on.md)
-- [按照派生类型打印对象](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-derived-type.md)
-- [指定程序的输入输出设备](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-io-tty.md)
-- [使用“$\_”和“$\__”变量](https://github.com/hellogcc/100-gdb-tips/blob/master/src/use-$_-$__-variables.md)
-- [打印程序动态分配内存的信息](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-malloc-memory.md)
+* [每行打印一个结构体成员](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-print-pretty-on.md)
+* [按照派生类型打印对象](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-derived-type.md)
+* [指定程序的输入输出设备](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-io-tty.md)
+* [使用“$\_”和“$\__”变量](https://github.com/hellogcc/100-gdb-tips/blob/master/src/use-$_-$__-variables.md)
+* [打印程序动态分配内存的信息](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-malloc-memory.md)
 
 #### [打印调用栈帧中变量的值](https://github.com/hellogcc/100-gdb-tips/blob/master/src/print-frame-variables.md)
 
@@ -1451,8 +1446,6 @@ Temporary breakpoint 2, main () at b.c:24
   1    process 1586      /home/nanxiao/a
 ```
 
-
-
 可以看到可以调试`b`程序了。
 
 另外也可用“`clone-inferior [ -copies n ] [ infno ]`”克隆现有的`inferior`，其中`n`默认为1，`infno`默认为当前的`inferior`：
@@ -1474,8 +1467,6 @@ Added inferior 4.
 ```
 
 可以看到又多了一个`b`程序。
-
-
 
 #### [打印程序进程空间信息](https://github.com/hellogcc/100-gdb-tips/blob/master/src/maint-info-program-space.md)
 
@@ -1538,8 +1529,6 @@ Added inferior 4.
 
 #### [使用“$_exitcode”变量](https://github.com/hellogcc/100-gdb-tips/blob/master/src/use-$_exitcode.md)
 
-
-
 ### core dump 文件
 
 #### [为调试进程产生core dump文件](https://github.com/hellogcc/100-gdb-tips/blob/master/src/generate-core-dump-file.md)
@@ -1590,8 +1579,6 @@ Program terminated with signal 11, Segmentation fault.
 6               *p = 0;
 ```
 
-
-
 有时我们想在gdb启动后，动态加载可执行程序和core dump文件，这时可以用“file”和“core”（core-file命令缩写）命令。“file”命令用来读取可执行文件的符号表信息，而“core”命令则是指定core dump文件的位置：
 
 ```
@@ -1612,7 +1599,7 @@ Program terminated with signal 11, Segmentation fault.
 
 ### 汇编
 
-- [设置汇编指令格式](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-disassembly-flavor.md)
+* [设置汇编指令格式](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-disassembly-flavor.md)
 
 #### [在函数的第一条汇编指令打断点](https://github.com/hellogcc/100-gdb-tips/blob/master/src/break-on-first-assembly-code.md)
 
@@ -1735,7 +1722,7 @@ End of assembler dump.
 
 ```
 (gdb) i line 13
-Line 13 of "foo.c" starts at address 0x4004e9 <main+37> and ends at 0x40050c <main+72>.	
+Line 13 of "foo.c" starts at address 0x4004e9 <main+37> and ends at 0x40050c <main+72>. 
 ```
 
 如果只想查看这一条语句对应的汇编代码，可以使用“`disassemble [Start],[End]`”命令：
@@ -1831,39 +1818,39 @@ gs             0x0      0
 
 ```
 (gdb) i all-registers
-	rax            0x7ffff7dd9f60   140737351884640
-	rbx            0x0      0
-	rcx            0x0      0
-	rdx            0x7fffffffe608   140737488348680
-	rsi            0x7fffffffe5f8   140737488348664
-	rdi            0x1      1
-	rbp            0x7fffffffe510   0x7fffffffe510
-	rsp            0x7fffffffe4c0   0x7fffffffe4c0
-	r8             0x7ffff7dd8300   140737351877376
-	r9             0x7ffff7deb9e0   140737351956960
-	r10            0x7fffffffe360   140737488348000
-	r11            0x7ffff7a68be0   140737348275168
-	r12            0x4003e0 4195296
-	r13            0x7fffffffe5f0   140737488348656
-	r14            0x0      0
-	r15            0x0      0
-	rip            0x4004cd 0x4004cd <main+9>
-	eflags         0x206    [ PF IF ]
-	cs             0x33     51
-	ss             0x2b     43
-	ds             0x0      0
-	es             0x0      0
-	fs             0x0      0
-	gs             0x0      0
-	st0            0        (raw 0x00000000000000000000)
-	st1            0        (raw 0x00000000000000000000)
-	st2            0        (raw 0x00000000000000000000)
-	st3            0        (raw 0x00000000000000000000)
-	st4            0        (raw 0x00000000000000000000)
-	st5            0        (raw 0x00000000000000000000)
-	st6            0        (raw 0x00000000000000000000)
-	st7            0        (raw 0x00000000000000000000)
-	......
+ rax            0x7ffff7dd9f60   140737351884640
+ rbx            0x0      0
+ rcx            0x0      0
+ rdx            0x7fffffffe608   140737488348680
+ rsi            0x7fffffffe5f8   140737488348664
+ rdi            0x1      1
+ rbp            0x7fffffffe510   0x7fffffffe510
+ rsp            0x7fffffffe4c0   0x7fffffffe4c0
+ r8             0x7ffff7dd8300   140737351877376
+ r9             0x7ffff7deb9e0   140737351956960
+ r10            0x7fffffffe360   140737488348000
+ r11            0x7ffff7a68be0   140737348275168
+ r12            0x4003e0 4195296
+ r13            0x7fffffffe5f0   140737488348656
+ r14            0x0      0
+ r15            0x0      0
+ rip            0x4004cd 0x4004cd <main+9>
+ eflags         0x206    [ PF IF ]
+ cs             0x33     51
+ ss             0x2b     43
+ ds             0x0      0
+ es             0x0      0
+ fs             0x0      0
+ gs             0x0      0
+ st0            0        (raw 0x00000000000000000000)
+ st1            0        (raw 0x00000000000000000000)
+ st2            0        (raw 0x00000000000000000000)
+ st3            0        (raw 0x00000000000000000000)
+ st4            0        (raw 0x00000000000000000000)
+ st5            0        (raw 0x00000000000000000000)
+ st6            0        (raw 0x00000000000000000000)
+ st7            0        (raw 0x00000000000000000000)
+ ......
 ```
 
 要打印单个寄存器的值，可以使用“i registers regname”或者“p $regname”，例如：
@@ -2069,14 +2056,14 @@ a=1
 
 ```
 (gdb) n
-13	  fun (i--);
+13   fun (i--);
 (gdb) 
-14	  fun (i--);
+14   fun (i--);
 (gdb) 
-15	  fun (i--);
+15   fun (i--);
 (gdb) 
 error
-17	  return 0;
+17   return 0;
 ```
 
 看起来是在15行，调用fun的时候出错了。常见的办法是在15行设置个断点，然后从头`run`一次。
@@ -2092,12 +2079,12 @@ Breakpoint 2 at 0x40056a: file jump.c, line 15.
 Continuing at 0x40056a.
 
 Breakpoint 2, main () at jump.c:15
-15	  fun (i--);
+15   fun (i--);
 (gdb) s
 fun (x=-2) at jump.c:5
-5	  if (x < 0)
+5   if (x < 0)
 (gdb) n
-6	    puts ("error");
+6     puts ("error");
 ```
 
 需要注意的是：
@@ -2156,29 +2143,29 @@ Writing into executable and core files is on.
 ```
 (gdb) disassemble /mr drawing 
 Dump of assembler code for function drawing:
-5	{
-   0x0000000000400642 <+0>:	55	push   %rbp
-   0x0000000000400643 <+1>:	48 89 e5	mov    %rsp,%rbp
-   0x0000000000400646 <+4>:	48 83 ec 10	sub    $0x10,%rsp
-   0x000000000040064a <+8>:	89 7d fc	mov    %edi,-0x4(%rbp)
+5 {
+   0x0000000000400642 <+0>: 55 push   %rbp
+   0x0000000000400643 <+1>: 48 89 e5 mov    %rsp,%rbp
+   0x0000000000400646 <+4>: 48 83 ec 10 sub    $0x10,%rsp
+   0x000000000040064a <+8>: 89 7d fc mov    %edi,-0x4(%rbp)
 
-6	  if (n != 0)
-   0x000000000040064d <+11>:	83 7d fc 00	cmpl   $0x0,-0x4(%rbp)
-   0x0000000000400651 <+15>:	74 0c	je     0x40065f <drawing+29>
+6   if (n != 0)
+   0x000000000040064d <+11>: 83 7d fc 00 cmpl   $0x0,-0x4(%rbp)
+   0x0000000000400651 <+15>: 74 0c je     0x40065f <drawing+29>
 
-7	    puts ("Try again?\nAll you need is a dollar, and a dream.");
-   0x0000000000400653 <+17>:	bf e0 07 40 00	mov    $0x4007e0,%edi
-   0x0000000000400658 <+22>:	e8 b3 fe ff ff	callq  0x400510 <puts@plt>
-   0x000000000040065d <+27>:	eb 0a	jmp    0x400669 <drawing+39>
+7     puts ("Try again?\nAll you need is a dollar, and a dream.");
+   0x0000000000400653 <+17>: bf e0 07 40 00 mov    $0x4007e0,%edi
+   0x0000000000400658 <+22>: e8 b3 fe ff ff callq  0x400510 <puts@plt>
+   0x000000000040065d <+27>: eb 0a jmp    0x400669 <drawing+39>
 
-8	  else
-9	    puts ("You win $3000!");
-   0x000000000040065f <+29>:	bf 12 08 40 00	mov    $0x400812,%edi
-   0x0000000000400664 <+34>:	e8 a7 fe ff ff	callq  0x400510 <puts@plt>
+8   else
+9     puts ("You win $3000!");
+   0x000000000040065f <+29>: bf 12 08 40 00 mov    $0x400812,%edi
+   0x0000000000400664 <+34>: e8 a7 fe ff ff callq  0x400510 <puts@plt>
 
-10	}
-   0x0000000000400669 <+39>:	c9	leaveq 
-   0x000000000040066a <+40>:	c3	retq   
+10 }
+   0x0000000000400669 <+39>: c9 leaveq 
+   0x000000000040066a <+40>: c3 retq   
 
 End of assembler dump.
 ```
@@ -2189,29 +2176,29 @@ End of assembler dump.
 (gdb) set variable *(short*)0x400651=0x0ceb
 (gdb) disassemble /mr drawing 
 Dump of assembler code for function drawing:
-5	{
-   0x0000000000400642 <+0>:	55	push   %rbp
-   0x0000000000400643 <+1>:	48 89 e5	mov    %rsp,%rbp
-   0x0000000000400646 <+4>:	48 83 ec 10	sub    $0x10,%rsp
-   0x000000000040064a <+8>:	89 7d fc	mov    %edi,-0x4(%rbp)
+5 {
+   0x0000000000400642 <+0>: 55 push   %rbp
+   0x0000000000400643 <+1>: 48 89 e5 mov    %rsp,%rbp
+   0x0000000000400646 <+4>: 48 83 ec 10 sub    $0x10,%rsp
+   0x000000000040064a <+8>: 89 7d fc mov    %edi,-0x4(%rbp)
 
-6	  if (n != 0)
-   0x000000000040064d <+11>:	83 7d fc 00	cmpl   $0x0,-0x4(%rbp)
-   0x0000000000400651 <+15>:	eb 0c	jmp    0x40065f <drawing+29>
+6   if (n != 0)
+   0x000000000040064d <+11>: 83 7d fc 00 cmpl   $0x0,-0x4(%rbp)
+   0x0000000000400651 <+15>: eb 0c jmp    0x40065f <drawing+29>
 
-7	    puts ("Try again?\nAll you need is a dollar, and a dream.");
-   0x0000000000400653 <+17>:	bf e0 07 40 00	mov    $0x4007e0,%edi
-   0x0000000000400658 <+22>:	e8 b3 fe ff ff	callq  0x400510 <puts@plt>
-   0x000000000040065d <+27>:	eb 0a	jmp    0x400669 <drawing+39>
+7     puts ("Try again?\nAll you need is a dollar, and a dream.");
+   0x0000000000400653 <+17>: bf e0 07 40 00 mov    $0x4007e0,%edi
+   0x0000000000400658 <+22>: e8 b3 fe ff ff callq  0x400510 <puts@plt>
+   0x000000000040065d <+27>: eb 0a jmp    0x400669 <drawing+39>
 
-8	  else
-9	    puts ("You win $3000!");
-   0x000000000040065f <+29>:	bf 12 08 40 00	mov    $0x400812,%edi
-   0x0000000000400664 <+34>:	e8 a7 fe ff ff	callq  0x400510 <puts@plt>
+8   else
+9     puts ("You win $3000!");
+   0x000000000040065f <+29>: bf 12 08 40 00 mov    $0x400812,%edi
+   0x0000000000400664 <+34>: e8 a7 fe ff ff callq  0x400510 <puts@plt>
 
-10	}
-   0x0000000000400669 <+39>:	c9	leaveq 
-   0x000000000040066a <+40>:	c3	retq   
+10 }
+   0x0000000000400669 <+39>: c9 leaveq 
+   0x000000000040066a <+40>: c3 retq   
 
 End of assembler dump.
 ```
@@ -2281,27 +2268,27 @@ From        To          Syms Read   Shared Object Library
 
 ### 脚本
 
-- [配置gdb init文件](https://github.com/hellogcc/100-gdb-tips/blob/master/src/config-gdbinit.md)
-- [按何种方式解析脚本文件](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-script-extension.md)
-- [保存历史命令](https://github.com/hellogcc/100-gdb-tips/blob/master/src/save-history-commands.md)
+* [配置gdb init文件](https://github.com/hellogcc/100-gdb-tips/blob/master/src/config-gdbinit.md)
+* [按何种方式解析脚本文件](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-script-extension.md)
+* [保存历史命令](https://github.com/hellogcc/100-gdb-tips/blob/master/src/save-history-commands.md)
 
 ### 源文件
 
-- [设置源文件查找路径](https://github.com/hellogcc/100-gdb-tips/blob/master/src/directory.md)
-- [替换查找源文件的目录](https://github.com/hellogcc/100-gdb-tips/blob/master/src/substitute-path.md)
+* [设置源文件查找路径](https://github.com/hellogcc/100-gdb-tips/blob/master/src/directory.md)
+* [替换查找源文件的目录](https://github.com/hellogcc/100-gdb-tips/blob/master/src/substitute-path.md)
 
 ### 图形化界面
 
-- [进入和退出图形化调试界面](https://github.com/hellogcc/100-gdb-tips/blob/master/src/tui-mode.md)
-- [显示汇编代码窗口](https://github.com/hellogcc/100-gdb-tips/blob/master/src/layout-asm.md)
-- [显示寄存器窗口](https://github.com/hellogcc/100-gdb-tips/blob/master/src/layout-regs.md)
-- [调整窗口大小](https://github.com/hellogcc/100-gdb-tips/blob/master/src/winheight.md)
+* [进入和退出图形化调试界面](https://github.com/hellogcc/100-gdb-tips/blob/master/src/tui-mode.md)
+* [显示汇编代码窗口](https://github.com/hellogcc/100-gdb-tips/blob/master/src/layout-asm.md)
+* [显示寄存器窗口](https://github.com/hellogcc/100-gdb-tips/blob/master/src/layout-regs.md)
+* [调整窗口大小](https://github.com/hellogcc/100-gdb-tips/blob/master/src/winheight.md)
 
 ### 其他
 
-- [命令行选项的格式](https://github.com/hellogcc/100-gdb-tips/blob/master/src/option-format.md)
-- [支持预处理器宏信息](https://github.com/hellogcc/100-gdb-tips/blob/master/src/preprocessor-macro.md)
-- [保留未使用的类型](https://github.com/hellogcc/100-gdb-tips/blob/master/src/keep-unused-types.md)
+* [命令行选项的格式](https://github.com/hellogcc/100-gdb-tips/blob/master/src/option-format.md)
+* [支持预处理器宏信息](https://github.com/hellogcc/100-gdb-tips/blob/master/src/preprocessor-macro.md)
+* [保留未使用的类型](https://github.com/hellogcc/100-gdb-tips/blob/master/src/keep-unused-types.md)
 
 #### [使用命令的缩写形式](https://github.com/hellogcc/100-gdb-tips/blob/master/src/use-short-command.md)
 
@@ -2341,18 +2328,16 @@ From        To          Syms Read   Shared Object Library
 
 另外，如果直接按回车键，会重复执行上一次的命令
 
-
-
-- [在gdb中执行shell命令和make](https://github.com/hellogcc/100-gdb-tips/blob/master/src/run-shell-command.md)
-- [在gdb中执行cd和pwd命令](https://github.com/hellogcc/100-gdb-tips/blob/master/src/run-cd-pwd.md)
-- [设置命令提示符](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-prompt.md)
+* [在gdb中执行shell命令和make](https://github.com/hellogcc/100-gdb-tips/blob/master/src/run-shell-command.md)
+* [在gdb中执行cd和pwd命令](https://github.com/hellogcc/100-gdb-tips/blob/master/src/run-cd-pwd.md)
+* [设置命令提示符](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-prompt.md)
 
 #### [设置被调试程序的参数](https://github.com/hellogcc/100-gdb-tips/blob/master/src/set-program-args.md)
 
 可以在gdb启动时，通过选项指定被调试程序的参数，例如：
 
 ```
-$ gdb -args ./a.out a b c
+gdb -args ./a.out a b c
 ```
 
 也可以在gdb中，通过命令来设置，例如：
@@ -2452,12 +2437,6 @@ Quit anyway? (y or n)
 
 此外“`set logging overwrite on`”命令可以让输出覆盖之前的日志文件；而 “`set logging redirect on`”命令会让gdb的日志不会打印在终端。
 
-
-
-
-
-
-
 ## 其他问题
 
 ### gdb 调试基本流程
@@ -2472,7 +2451,7 @@ Quit anyway? (y or n)
 8. 显示栈/栈帧（bt、bt N、bt -N、bt full、bt full N、bt full -N等，注：一个进程对应call-stack调用栈，一个函数对应stack-frame栈帧，显示栈帧：info frame，）
 9. 显示汇编代码（显示指定函数的反汇编代码：disas main、disas funname，）
 10. 显示值（pc命令行、ebp栈底指针、esp栈顶指针，以及各种寄存器值，struct结构变量值、Json结构变量值、一般变量variable值，class/struc结构对象指针this，再特殊的结构变量可以自己写gdb命令脚本来显示等）
-11. 显示指定程序地址的源代码（list <*addr>：x/i $pc，list *$pc等）
+11. 显示指定程序地址的源代码（list <*addr>：x/i $pc，list*$pc等）
 12. 显示指定行号函数的源代码（list filename:lineNum，list filename:funname，多文件时必须加文件名）
 13. 列出指定区域的代码（list line1Num, line2Num）
 14. 显示main函数的参数列表（show args）
@@ -2492,13 +2471,7 @@ Quit anyway? (y or n)
 28. 附着到指定进程（attach 1920、attach `pidof ./other.out`）
 29. 切换到指定线程（thread 20167或者t 20167）终止一个正在调试程序（kill命令）
 
-
-
-
-
 ### 断点如何实现
-
-
 
 ### 写C++代码时有一类错误是 coredump ，很常见，你遇到过吗？怎么调试这个错误？
 
@@ -2510,13 +2483,11 @@ coredump是程序由于异常或者bug在运行时异常退出或者终止，在
 
 **产生core dump的可能原因**
 
-*  内存访问越界
+* 内存访问越界
 * 多线程程序使用了线程不安全的函数
 * 多线程读写的数据未加锁保护
 * 非法指针
-*  堆栈溢出
-
-
+* 堆栈溢出
 
 **查看操作系统是否开启产生core文件**
 
@@ -2532,8 +2503,6 @@ coredump是程序由于异常或者bug在运行时异常退出或者终止，在
 @root soft core unlimited
 @root hard core unlimited
 ```
-
-
 
 **core文件的名称和生成路径**
 
@@ -2552,17 +2521,17 @@ echo "1" > /proc/sys/kernel/core_uses_pid
 namespace {
 
 void func() {
-	const char* p = "hello";
-	delete p;
+ const char* p = "hello";
+ delete p;
 }
 
 } // namespace
 
 int main()
 {
-	fprintf(stdout, "test start\n");
-	func();
-	fprintf(stdout, "test finish\n");
+ fprintf(stdout, "test start\n");
+ func();
+ fprintf(stdout, "test finish\n");
 }
 ```
 
@@ -2575,17 +2544,11 @@ g++ -g -o main main.cpp
 
 ![img](https://img-blog.csdnimg.cn/20190724112246931.png)
 
-
-
-
-
 **如果有多个程序产生core文件，或者同一个程序多次崩溃，就会重复覆盖同一个core文件**。通过修改kernel参数，可以指定内核所生成的core dump文件的文件名，如设置core文件名形式为core_programname_time_pid，所有的core文件存放在/usr/core_log目录下，则在终端输入以下命令：
 
 ```
 echo /usr/core_log/core_%e_%t_%p >> /proc/sys/kernel/core_pattern
 ```
-
-
 
 core默认的文件名称是core.pid，pid指的是产生段错误的程序的进程号。  默认路径是产生段错误的程序的当前目录。
 
@@ -2594,10 +2557,6 @@ core默认的文件名称是core.pid，pid指的是产生段错误的程序的�
 **/proc/sys/kernel/core_pattern：**可以设置格式化的core文件保存的位置和文件名，比如原来文件内容是core-%e。  可以这样修改:  echo “/corefile/core-%e-%p-%t” > /proc/sys/kernel/core_pattern  将会控制所产生的core文件会存放到/corefile目录下，产生的文件名为：core-命令名-pid-时间戳。
 
 **以下是参数列表:**  %p - insert pid into filename 添加pid  %u - insert current uid into filename 添加当前uid  %g - insert current gid into filename 添加当前gid  %s - insert signal that caused the coredump into the filename 添加导致产生core的信号  %t - insert UNIX time that the coredump occurred into filename 添加core文件生成时的unix时间  %h - insert hostname where the coredump happened into filename 添加主机名  %e - insert coredumping executable name into filename 添加命令名。  一般情况下，无需修改，按照默认的方式即可。
-
-
-
-
 
 **gdb 调试 core 文件的步骤**
 
@@ -2623,15 +2582,11 @@ gdb调试core文件的步骤常见的有如下几种，推荐第一种。
 
 （3）查找段错误位置：**where或者bt**。  用法示例：  
 
-
-
 ![img](https://ask.qcloudimg.com/raw/yehe-4fad69835728/4e30ywe402.png)
 
 **具体步骤三：**  
 
 （1）启动gdb，进入core文件，命令格式：**gdb -c [core file]**。  用法示例：gdb -core test.core。  （2）其它步骤同步骤二。
-
-
 
 **通过gdb打开core文件**：
 
@@ -2640,8 +2595,6 @@ gdb调试core文件的步骤常见的有如下几种，推荐第一种。
 ![img](https://img-blog.csdnimg.cn/2019072411240828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZlbmdiaW5nY2h1bg==,size_16,color_FFFFFF,t_70)
 
 ![img](https://img-blog.csdnimg.cn/20190724112424593.png)
-
-
 
 **通过`gdb help generate-core-file`产生 core 文件**
 
@@ -2656,15 +2609,11 @@ generate-core-file
 
 ![img](https://img-blog.csdnimg.cn/2019072411254752.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZlbmdiaW5nY2h1bg==,size_16,color_FFFFFF,t_70)
 
-
-
 **core 缺点**
 
 * 因为 core 文件是对当时进程地址空间的镜像，所以 core 文件大小一般都会比较大，这样很占用磁盘空间，而且如果要将文件从服务器上下载到本地分析也会比较耗时。
 * 对于缓冲区溢出导致的 coredump ，进程的调用堆栈已经被覆盖破坏了， core 文件显示的堆栈信息往往错误。
 * 程序因SIGALRM、SIGPIPE等信号崩溃，则不会产生 core 文件。
-
-
 
 **在某些情况下core文件的堆栈调用顺序会被溢出的内容覆盖，这时就没办法使用backtrace命令查看调用堆栈了，这种情况下如何定位问题**
 
@@ -2704,23 +2653,22 @@ updateserver[8099]: segfault at 0000000000000000 rip 0000000000500fbf rsp 000000
 /home/rizhao/dev/oceanbase/src/common/ob_base_server.cpp:222
 ```
 
-- -fstack-protector-all (https://www.ibm.com/developerworks/cn/linux/l-cn-gccstack/index.html) 该选项旨在通过Canaries检测来判断栈是否被破坏，在破坏前让程序抛异常退出。 当然还有另外一个目的是提高栈溢出攻击的成本。有兴趣的可以了解下原理。通过这种方式来进行堆栈保护
-- -g 加上g选项后编译器会做如下额外操作
-	- 创建符号表，生成的文件包含符号表内容。生成的core文件也会附带符号表相关内容
-	- 关闭优化机制，程序严格按照原来的代码执行，避免定位问题对应代码带来的偏移干扰
-- 开启-O0 选项避免参数和函数inline。 生产环境建议开启为-O2 。这里为了方便定位问题，临时调整成该选项。
+* -fstack-protector-all (<https://www.ibm.com/developerworks/cn/linux/l-cn-gccstack/index.html>) 该选项旨在通过Canaries检测来判断栈是否被破坏，在破坏前让程序抛异常退出。 当然还有另外一个目的是提高栈溢出攻击的成本。有兴趣的可以了解下原理。通过这种方式来进行堆栈保护
+* -g 加上g选项后编译器会做如下额外操作
+  * 创建符号表，生成的文件包含符号表内容。生成的core文件也会附带符号表相关内容
+  * 关闭优化机制，程序严格按照原来的代码执行，避免定位问题对应代码带来的偏移干扰
+* 开启-O0 选项避免参数和函数inline。 生产环境建议开启为-O2 。这里为了方便定位问题，临时调整成该选项。
 
 ### 多线程调试
 
 <img src="https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/202203151449773.png" alt="这里写图片描述" style="zoom: 80%;float:left" />
 
-- info threads 查看所有线程，默认分支是主线程
+* info threads 查看所有线程，默认分支是主线程
 
-- thread id 切换线程
+* thread id 切换线程
 
-- bt 查看每个线程的栈帧然后设置断点
+* bt 查看每个线程的栈帧然后设置断点
 
-- thread apply （n或all） 命令使用thread apply来让一个或是多个线程执行指定的命令。例如让所有的线程打印调用栈信息。
+* thread apply （n或all） 命令使用thread apply来让一个或是多个线程执行指定的命令。例如让所有的线程打印调用栈信息。
 
-- set scheduler-locking on 锁定只有当前的线程能够执行
-
+* set scheduler-locking on 锁定只有当前的线程能够执行
