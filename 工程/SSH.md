@@ -59,11 +59,11 @@ SSH是一种协议标准，用于在网络主机之间进行加密的一种协�
 
 图1-4：中间人攻击
 
-###### 
+######
 
 ###### **2.1 SSH 中是如何解决这个问题的？**
 
-###### 
+######
 
 ##### **2.1.1 基于口令的认证**
 
@@ -77,22 +77,16 @@ RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.
 Are you sure you want to continue connecting (yes/no)?
 ```
 
-
-
 上面的信息说的是：无法确认主机 ssh-server.example.com（12.18.429.21）的真实性，不过知道它的公钥指纹，是否继续连接？
 
 > 之所以用 fingerprint 代替 key，主要是 key 过于长（RSA 算法生成的公钥有1024 位），很难直接比较。所以，对公钥进行 Hash 生成一个 128 位的指纹，这样就方便比较了。
 
 如果输入 **yes** 后，会出现下面信息：
 
-
-
 ```javascript
 Warning: Permanently added 'ssh-server.example.com,12.18.429.21' (RSA) to the list of known hosts.
 Password: (enter password)
 ```
-
-
 
 该 host 已被确认，并被追加到文件 **known_hosts** 中，然后就需要输入密码，之后的流程就按照图 1-3 进行。
 
@@ -104,7 +98,7 @@ Password: (enter password)
 
 图1-5：公钥认证流程
 
-## 
+##
 
 1. Client 将自己的公钥存放在 Server 上，追加在文件 authorized_keys 中。注意：Client 端的 Public key 是 Client 手动 Copy 到 Server端的，SSH 建立连接过程中没有公钥的交换操作。
 2. Server 端接收到 Client 的连接请求后，会在 authorized_keys 中匹配到 Client 的公钥 pubKey，并生成随机数 R，用 Client 的公钥对该随机数进行加密得到 pubKey(R)，然后将加密后信息发送给 Client。
@@ -127,9 +121,9 @@ GitHub 中 SSH keys 设置
 经过上面的原理分析，下面三行命令的含义应该很容易理解了：
 
 ```javascript
-$ ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
-$ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-$ chmod 0600 ~/.ssh/authorized_keys
+ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 0600 ~/.ssh/authorized_keys
 ```
 
 复制
@@ -172,8 +166,6 @@ $ ssh host
 $ ssh -p 2017 user@host
 ```
 
-
-
 ### **4. 其它一些补充**
 
 下面关于 SSH 的 **known_hosts** 机制的一些补充。
@@ -191,16 +183,12 @@ Host key not found from the list of known hosts.
 Are you sure you want to continue connecting (yes/no)?
 ```
 
-
-
 此时，如果我们选择 **yes**，那么该 host key 就会被加入到 Client 的known_hosts 中，格式如下：
 
 ```javascript
 # domain name+encryption algorithm+host key
 example.hostname.com ssh-rsa AAAAB4NzaC1yc2EAAAABIwAAAQEA...
 ```
-
-
 
 ##### **4.3 为什么需要 known_hosts？**
 

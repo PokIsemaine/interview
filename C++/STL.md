@@ -30,15 +30,13 @@
 * 迭代器失效的情况
 * 迭代器：++it、it++哪个好，为什么
 
-
-
 ### vector
 
 * vector 的实现？
 
 * vector 如何扩容？
 
-* vector 扩容后会做哪些操作vector扩容后把旧空间的数据搬到新空间用拷贝构造还是移动构造https://blog.csdn.net/qiuguolu1108/article/details/114796903#t4
+* vector 扩容后会做哪些操作vector扩容后把旧空间的数据搬到新空间用拷贝构造还是移动构造<https://blog.csdn.net/qiuguolu1108/article/details/114796903#t4>
 
 * 什么时候用vector,什么时候用list，有什么区别
 
@@ -62,8 +60,6 @@
 
 * 函数里的 `vector` 存在堆上还是栈上，为什么？
 
-
-
 ### （multi）map/set
 
 * map 中[] 与 find 的区别？
@@ -73,8 +69,6 @@
 * set和map  的区别，multimap和multiset的区别
 * 为何 map 和 set的插入效率比其他序列容器高，而且每次 insert 之后，以前保持的 iterator 不会失效
 * 为何 map 和 set 不能像 vector 一样有个 reserve 函数来实现预分配
-
-
 
 ### unordered_map/set
 
@@ -92,8 +86,6 @@
 * priority_queue 的实现？
 * 从效率角度考虑，通过什么 数据 结构可实现优先级队列？
 
-
-
 ### list/stack/queue/forward_list
 
 * list的实现
@@ -106,8 +98,6 @@
 
 * deque 的实现
 * deque 和 vector 的区别
-
-
 
 ## 回答
 
@@ -144,15 +134,11 @@
 * unordered_map 底层数据结构为hash表，无序，不重复
 * unordered_multimap 底层数据结构为hash表，无序，可重复
 
-
-
 支持随机访问的容器：string,array,vector,deque
 
 支持在任意位置插入/删除的容器：list,forward_list
 
 支持在尾部插入元素：vector,string,deque
-
-
 
 #### 容器内部删除一个元素？
 
@@ -164,65 +150,60 @@ erase迭代器不仅使所指向被删除的迭代器失效，而且使被删元
 
 erase迭代器只是被删除元素的迭代器失效，但是返回值是void，所以要采用erase(it++)的方式删除迭代器；`c.erase(it++)`
 
-
-
-
-https://zhuanlan.zhihu.com/p/450086692
+<https://zhuanlan.zhihu.com/p/450086692>
 
 ```cpp
 bool badValue(int) { return true; } // 返回x是否为"坏值"
  
 int test_item_9()
 {
-	// 第一种情况：删除 c 中所有值指定值 2021 的元素
-	std::vector<int> c1;
-	c1.erase(std::remove(c1.begin(), c1.end(), 2021), c1.end()); // 当c1是vector, string或deque时，erase-remove习惯用法是删除特定值的元素的最好办法
+ // 第一种情况：删除 c 中所有值指定值 2021 的元素
+ std::vector<int> c1;
+ c1.erase(std::remove(c1.begin(), c1.end(), 2021), c1.end()); // 当c1是vector, string或deque时，erase-remove习惯用法是删除特定值的元素的最好办法
  
-	std::list<int> c2;
-	c2.remove(2021); // 当c2是list时，remove成员函数是删除特定值的元素的最好办法
+ std::list<int> c2;
+ c2.remove(2021); // 当c2是list时，remove成员函数是删除特定值的元素的最好办法
  
-	std::set<int> c3;
-	c3.erase(2021); // 当c3是标准关联容器时，erase成员函数是删除特定值元素的最好办法
+ std::set<int> c3;
+ c3.erase(2021); // 当c3是标准关联容器时，erase成员函数是删除特定值元素的最好办法
  
-	// 第二种情况：删除判别式(predicate)返回 true 的每一个对象
-	c1.erase(std::remove_if(c1.begin(), c1.end(), badValue), c1.end()); // 当c1是vector, string或deque时，这是删除使badValue返回true的对象的最好办法
+ // 第二种情况：删除判别式(predicate)返回 true 的每一个对象
+ c1.erase(std::remove_if(c1.begin(), c1.end(), badValue), c1.end()); // 当c1是vector, string或deque时，这是删除使badValue返回true的对象的最好办法
  
-	c2.remove_if(badValue); // 当c2是list时，这是删除使badValue返回true的对象的最好办法
+ c2.remove_if(badValue); // 当c2是list时，这是删除使badValue返回true的对象的最好办法
  
-	for (std::set<int>::iterator i = c3.begin(); i != c3.end();) {
-		if (badValue(*i)) c3.erase(i++); // 对坏值，把当前的i传给erase，递增i是副作用
-		else ++i;                        // 对好值，则简单的递增i
-	}//当对关联式容器来说
+ for (std::set<int>::iterator i = c3.begin(); i != c3.end();) {
+  if (badValue(*i)) c3.erase(i++); // 对坏值，把当前的i传给erase，递增i是副作用
+  else ++i;                        // 对好值，则简单的递增i
+ }//当对关联式容器来说
  
-	// 第三种情况，每次元素被删除时，还需要都向一个日志(log)文件中写一条信息
-	std::ofstream logFile;
-	for (std::set<int>::iterator i = c3.begin(); i != c3.end();) {
-		if (badValue(*i)) {
-			logFile << "Erasing " << *i << '\n'; // 写日志文件
-			c3.erase(i++); // 对坏值，把当前的i传给erase，递增i是副作用
-		}
-		else ++i;              // 对好值，则简单第递增i
-	}//当对关联式容器来说
+ // 第三种情况，每次元素被删除时，还需要都向一个日志(log)文件中写一条信息
+ std::ofstream logFile;
+ for (std::set<int>::iterator i = c3.begin(); i != c3.end();) {
+  if (badValue(*i)) {
+   logFile << "Erasing " << *i << '\n'; // 写日志文件
+   c3.erase(i++); // 对坏值，把当前的i传给erase，递增i是副作用
+  }
+  else ++i;              // 对好值，则简单第递增i
+ }//当对关联式容器来说
  
-	for (std::vector<int>::iterator i = c1.begin(); i != c1.end();) {
-		if (badValue(*i)) {
-			logFile << "Erasing " << *i << '\n';
-			i = c1.erase(i); // 把erase的返回值赋给i，使i的值保持有效
-		}
-		else ++i;
-	}//当对序列式容器来说
+ for (std::vector<int>::iterator i = c1.begin(); i != c1.end();) {
+  if (badValue(*i)) {
+   logFile << "Erasing " << *i << '\n';
+   i = c1.erase(i); // 把erase的返回值赋给i，使i的值保持有效
+  }
+  else ++i;
+ }//当对序列式容器来说
  
-	return 0;
+ return 0;
 }
 ```
 
 总结一下：
 
-- 要删除容器中有特定值的所有对象：如果容器是 vector，string 或deque，则使用 erase-remove 习惯用法；如果容器是list，则使用 list::remove；如果容器是一个标准关联容器，则使用它的 erase [成员函数](https://www.zhihu.com/search?q=成员函数&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})。
-- 要删除容器中满足特定判别式(条件)的所有对象：如果容器是vector， string或deque，则使用[erase-remove_if](https://www.zhihu.com/search?q=erase-remove_if&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})习惯用法；如果容器是list，则使用list::remove_if；如果容器是一个标准关联容器，则使用remove_copy_if和swap，或者写一个循环来遍历容器中的元素，记住当把迭代器传给erase时，要对它进行后缀递增。
-- 要在循环内做某些(除了删除对象之外的)操作：如果容器是一个[标准序列容器](https://www.zhihu.com/search?q=标准序列容器&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})，则写一个循环来遍历容器中的元素，记住每次调用erase时，要用它的返回值更新迭代器；如果容器是一个标准关联容器，则写一个循环来遍历容器中的元素，记住当把迭代器传给erase时，要对[迭代器](https://www.zhihu.com/search?q=迭代器&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})做后缀递增。
-
-
+* 要删除容器中有特定值的所有对象：如果容器是 vector，string 或deque，则使用 erase-remove 习惯用法；如果容器是list，则使用 list::remove；如果容器是一个标准关联容器，则使用它的 erase [成员函数](https://www.zhihu.com/search?q=成员函数&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})。
+* 要删除容器中满足特定判别式(条件)的所有对象：如果容器是vector， string或deque，则使用[erase-remove_if](https://www.zhihu.com/search?q=erase-remove_if&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})习惯用法；如果容器是list，则使用list::remove_if；如果容器是一个标准关联容器，则使用remove_copy_if和swap，或者写一个循环来遍历容器中的元素，记住当把迭代器传给erase时，要对它进行后缀递增。
+* 要在循环内做某些(除了删除对象之外的)操作：如果容器是一个[标准序列容器](https://www.zhihu.com/search?q=标准序列容器&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})，则写一个循环来遍历容器中的元素，记住每次调用erase时，要用它的返回值更新迭代器；如果容器是一个标准关联容器，则写一个循环来遍历容器中的元素，记住当把迭代器传给erase时，要对[迭代器](https://www.zhihu.com/search?q=迭代器&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"article"%2C"sourceId"%3A"450086692"})做后缀递增。
 
 #### 容器 size 和 capacity 区别，reserve 和 resize 区别
 
@@ -230,35 +211,28 @@ int test_item_9()
 
 **size**：vector 容器的大小，是它实际所包含的元素个数
 
-
-
-**resize(n)** 
+**resize(n)**
 
 * 调整容器的长度大小，使其能容纳n个元素。
-	* 如果n小于容器的当前的size，则删除多出来的元素。
-	*  否则，添加采用值初始化的元素。
+  * 如果n小于容器的当前的size，则删除多出来的元素。
+  * 否则，添加采用值初始化的元素。
 * resize(n，t)：多一个参数t，将所有新添加的元素初始化为t。
-*  resize()函数和容器的size息息相关。调用resize(n)后，容器的size即为n。
-*  至于是否影响capacity，取决于调整后的容器的size是否大于capacity。
+* resize()函数和容器的size息息相关。调用resize(n)后，容器的size即为n。
+* 至于是否影响capacity，取决于调整后的容器的size是否大于capacity。
 * 容器调用resize()函数后，所有的空间都已经初始化了，所以可以直接访问
 * resize()可以改变有效空间的大小，也有改变默认值的功能。capacity的大小也会随着改变。**resize()可以有多个参数。**
 * resize是改变容器的大小，且在创建对象，因此，调用这个函数之后，就可以引用容器内的对象了，因此当加入新的元素时，用operator[]操作符，或者用迭代器来引用元素对象。此时再**调用push_back()函数，是加在这个新的空间后面的。**
 * resize()在时间效率上是比reserve()低的。但是在多线程的场景下，用resize再合适不过
 
-
  **reserve(n)**
 
 * 预分配n个元素的存储空间。
 * reserve()函数和容器的capacity息息相关。
-	* 调用reserve(n)后，若容器的capacity<n，则重新分配内存空间，从而使得capacity等于n。
-	* 如果capacity>=n呢？capacity无变化。
+  * 调用reserve(n)后，若容器的capacity<n，则重新分配内存空间，从而使得capacity等于n。
+  * 如果capacity>=n呢？capacity无变化。
 * reserve()函数预分配出的空间没有被初始化，所以不可访问
 * reserve是**直接扩充到已经确定的大小**，可以减少多次开辟、释放空间的问题（优化push_back），就可以提高效率，其次还可以减少多次要拷贝数据的问题。reserve只是保证vector中的空间大小（capacity）最少达到参数所指定的大小n。**reserve()只有一个参数。**
 * reserve是容器预留空间，但在空间内不真正创建元素对象，所以在没有添加新的对象之前，不能引用容器内的元素。加入新的元素时，要调用push_back()/insert()函数。
-
-
-
-
 
 #### STL 容器是线程安全的吗？
 
@@ -275,8 +249,6 @@ int test_item_9()
 在每个容器返回的迭代器（例如通过调用begin或end）的生存期之内都要锁定该容器；
 
 在每个在容器上调用的算法执行期间锁定该容器。
-
-
 
 ### 仿函数
 
@@ -331,8 +303,6 @@ class ShorterThan {
  };
 ```
 
-
-
 #### STL中仿函数有什么用，和函数指针有什么不同，哪个效率高
 
 * 仿函数：在C++标准中采用的名称是函数对象（function objects）。对于重载了()操作符的类，可以实现类似函数调用的过程，所以叫做仿函数，实际上仿函数对象仅仅占用1字节，因为内部没有数据成员，仅仅是一个重载的方法而已。
@@ -340,17 +310,11 @@ class ShorterThan {
 
 在函数对象的方式中，内联inline有效，而作为函数指针时，一般编译器都不会内联函数指针指向的函数，即使指定了inline，使用函数对象一般是裸函数的1.5倍，最多能快2倍多
 
-
-
-
-
 ### 空间配置器
 
 #### allocator 的作用
 
  new在内存分配上面有一些局限性，new的机制是将内存分配和对象构造组合在一起，同样的，delete也是将对象析构和内存释放组合在一起的。allocator将这两部分分开进行，allocator申请一部分内存，不进行初始化对象，只有当需要的时候才进行初始化操作。
-
-
 
 #### STL的两级空间配置器
 
@@ -386,7 +350,7 @@ class ShorterThan {
 
 1、维护16条链表，分别是0-15号链表，最小8字节，以8字节逐渐递增，最大128字节，你传入一个字节参数，表示你需要多大的内存，会自动帮你校对到第几号链表（如需要13bytes空间，我们会给它分配16bytes大小），在找到第n个链表后查看链表是否为空，如果不为空直接从对应的free_list中拔出，将已经拨出的指针向后移动一位。
 
-2、对应的free_list为空，先看其内存池是不是空时，如果内存池不为空： （1）先检验它剩余空间是否够20个节点大小（即所需内存大小(提升后) * 20），若足够则直接从内存池中拿出20个节点大小空间，将其中一个分配给用户使用，另外19个当作自由链表中的区块挂在相应的free_list下，这样下次再有相同大小的内存需求时，可直接拨出。 （2）如果不够20个节点大小，则看它是否能满足1个节点大小，如果够的话则直接拿出一个分配给用户，然后从剩余的空间中分配尽可能多的节点挂在相应的free_list中。 （3）如果连一个节点内存都不能满足的话，则将内存池中剩余的空间挂在相应的free_list中（找到相应的free_list），然后再给内存池申请内存，转到3。 3、内存池为空，申请内存 此时二级空间配置器会使用malloc()从heap上申请内存，（一次所申请的内存大小为2 * 所需节点内存大小（提升后）* 20 + 一段额外空间），申请40块，一半拿来用，一半放内存池中。 4、malloc没有成功 在第三种情况下，如果malloc()失败了，说明heap上没有足够空间分配给我们了，这时，二级空间配置器会从比所需节点空间大的free_list中一一搜索，从比它所需节点空间大的free_list中拔除一个节点来使用。如果这也没找到，说明比其大的free_list中都没有自由区块了，那就要调用一级适配器了。
+2、对应的free_list为空，先看其内存池是不是空时，如果内存池不为空： （1）先检验它剩余空间是否够20个节点大小（即所需内存大小(提升后) *20），若足够则直接从内存池中拿出20个节点大小空间，将其中一个分配给用户使用，另外19个当作自由链表中的区块挂在相应的free_list下，这样下次再有相同大小的内存需求时，可直接拨出。 （2）如果不够20个节点大小，则看它是否能满足1个节点大小，如果够的话则直接拿出一个分配给用户，然后从剩余的空间中分配尽可能多的节点挂在相应的free_list中。 （3）如果连一个节点内存都不能满足的话，则将内存池中剩余的空间挂在相应的free_list中（找到相应的free_list），然后再给内存池申请内存，转到3。 3、内存池为空，申请内存 此时二级空间配置器会使用malloc()从heap上申请内存，（一次所申请的内存大小为2* 所需节点内存大小（提升后）* 20 + 一段额外空间），申请40块，一半拿来用，一半放内存池中。 4、malloc没有成功 在第三种情况下，如果malloc()失败了，说明heap上没有足够空间分配给我们了，这时，二级空间配置器会从比所需节点空间大的free_list中一一搜索，从比它所需节点空间大的free_list中拔除一个节点来使用。如果这也没找到，说明比其大的free_list中都没有自由区块了，那就要调用一级适配器了。
 
 释放时调用deallocate()函数，若释放的n>128，则调用一级空间配置器，否则就直接将内存块挂上自由链表的合适位置。
 
@@ -408,16 +372,12 @@ GC4.9之后就没有第一级了，只有第二级
 
 allocate函数：如果要分配的内存大于128字节，就转用第一级分配器，否则也就是小于128字节。那么首先判断落在第几号链表，定位到了，先判断链表是不是空，如果是空就需要充值，（调节到8的倍数，默认一次申请20个区块，当然了也要判断20个是不是能够申请到，如果只申请到一个那就直接返回好了，不止一个的话，把第2到第n个挨个挂到当前链表上，第一个返回回去给容器用,n是不大于20的，当然了如果不在1-20之间，那就是内存碎片了，那就先把碎片挂到某一条链表上，然后再重新malloc了，malloc 2*20个块）去内存池去拿或者重新分配。不为空的话
 
-
-
 对象构造前的空间配置和对象析构后的空间释放，由<stl_alloc.h>负责，SGI对此的设计哲学如下：
 
 * 向system heap要求空间。
 * 考虑多线程状态。
 * 考虑内存不足时的应变措施。
 * 考虑过多“小型区块”可能造成的内存碎片问题。
-
-
 
 考虑小型区块造成的内存破碎问题，SGI设计了双层级配置器：
 
@@ -428,9 +388,8 @@ allocate函数：如果要分配的内存大于128字节，就转用第一级分
 
 ![在这里插入图片描述](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWFnZXMyMDE1LmNuYmxvZ3MuY29tL2Jsb2cvMTA5MjE2NS8yMDE3MDIvMTA5MjE2NS0yMDE3MDIyODIzMDQyODExMC0xMDY1NDA4MTk5LnBuZw?x-oss-process=image/format,png)
 
-
 2、第二级空间配置器详解
-  第二级空间配置器实际上是一个内存池，维护了16个自由链表。自由链表是一个指针数组，有点类似与hash桶，它的数组大小为16，每个数组元素代表所挂的区块大小，比如free _ list[0]代表下面挂的是8bytes的区块，free _ list[1]代表下面挂的是16bytes的区块…….依次类推，直到free _ list[15]代表下面挂的是128bytes的区块。
+  第二级空间配置器实际上是一个内存池，维护了16个自由链表。自由链表是一个指针数组，有点类似与hash桶，它的数组大小为16，每个数组元素代表所挂的区块大小，比如free *list[0]代表下面挂的是8bytes的区块，free* list[1]代表下面挂的是16bytes的区块…….依次类推，直到free _ list[15]代表下面挂的是128bytes的区块。
 
 ![在这里插入图片描述](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWFnZXMyMDE1LmNuYmxvZ3MuY29tL2Jsb2cvODM1MjM0LzIwMTYwNi84MzUyMzQtMjAxNjA2MDMxOTAyNDI3MTEtNTIyMzI4MjU1LnBuZw?x-oss-process=image/format,png)
 
@@ -439,27 +398,17 @@ allocate函数：如果要分配的内存大于128字节，就转用第一级分
 * 自由链表所挂区块都是8的整数倍，因此当我们需要非8倍数的区块，往往会导致浪费。
 * 由于配置器的所有方法，成员都是静态的，那么他们就是存放在静态区。释放时机就是程序结束，这样子会导致自由链表一直占用内存，自己进程可以用，其他进程却用不了。
 
-
-
 #### STL中的allocator、deallocator
 
 \1) 第一级配置器直接使用malloc()、free()和relloc()，第二级配置器视情况采用不同的策略：当配置区块超过128bytes时，视之为足够大，便调用第一级配置器；当配置器区块小于128bytes时，为了降低额外负担，使用复杂的内存池整理方式，而不再用一级配置器；
 
- 
-
 \2) 第二级配置器主动将任何小额区块的内存需求量上调至8的倍数，并维护16个free-list，各自管理大小为8~128bytes的小额区块；
 
- 
-
 \3) 空间配置函数allocate()，首先判断区块大小，大于128就直接调用第一级配置器，小于128时就检查对应的free-list。如果free-list之内有可用区块，就直接拿来用，如果没有可用区块，就将区块大小调整至8的倍数，然后调用refill()，为free-list重新分配空间；
-
- 
 
 \4) 空间释放函数deallocate()，该函数首先判断区块大小，大于128bytes时，直接调用一级配置器，小于128bytes就找到对应的free-list然后释放内存。
 
 #### STL 内存池
-
-
 
 ### 迭代器
 
@@ -472,41 +421,37 @@ allocate函数：如果要分配的内存大于128字节，就转用第一级分
 | list、(multi)set/map                   | 双向迭代器     |
 | unordered_(multi)set/map、forward_list | 前向迭代器     |
 
-- 前向迭代器（forward iterator）
+* 前向迭代器（forward iterator）
 
-	则 p 支持 ++p，p++，*p 操作，还可以被复制或赋值，可以用 == 和 != 运算符进行比较。
+ 则 p 支持 ++p，p++，*p 操作，还可以被复制或赋值，可以用 == 和 != 运算符进行比较。
 
-- 双向迭代器（bidirectional iterator）
+* 双向迭代器（bidirectional iterator）
 
-	双向迭代器具有正向迭代器的全部功能，除此之外，假设 p 是一个双向迭代器，则还可以进行 --p 或者 p-- 操作（即一次向后移动一个位置）。
+ 双向迭代器具有正向迭代器的全部功能，除此之外，假设 p 是一个双向迭代器，则还可以进行 --p 或者 p-- 操作（即一次向后移动一个位置）。
 
-- 随机访问迭代器（random access iterator）
+* 随机访问迭代器（random access iterator）
 
-	随机访问迭代器具有双向迭代器的全部功能。除此之外，假设 p 是一个随机访问迭代器，i 是一个整型变量或常量，则 p 还支持以下操作：
+ 随机访问迭代器具有双向迭代器的全部功能。除此之外，假设 p 是一个随机访问迭代器，i 是一个整型变量或常量，则 p 还支持以下操作：
 
-	1. p+=i：使得 p 往后移动 i 个元素。
-	2. p-=i：使得 p 往前移动 i 个元素。
-	3. p+i：返回 p 后面第 i 个元素的迭代器。
-	4. p-i：返回 p 前面第 i 个元素的迭代器。
-	5. p[i]：返回 p 后面第 i 个元素的引用。
+ 1. p+=i：使得 p 往后移动 i 个元素。
+ 2. p-=i：使得 p 往前移动 i 个元素。
+ 3. p+i：返回 p 后面第 i 个元素的迭代器。
+ 4. p-i：返回 p 前面第 i 个元素的迭代器。
+ 5. p[i]：返回 p 后面第 i 个元素的引用。
 
-- 输入迭代器 (input iterator)
+* 输入迭代器 (input iterator)
 
-	可用于读取容器中的元素，但是不保证能支持容器的写入操作。
+ 可用于读取容器中的元素，但是不保证能支持容器的写入操作。
 
-	只支持自增运算
+ 只支持自增运算
 
-- 输出迭代器 (output iterator)
+* 输出迭代器 (output iterator)
 
-	可视为与输入迭代器功能互补的迭代器；
+ 可视为与输入迭代器功能互补的迭代器；
 
-	输出迭代器可用于向容器写入元素，但是不保证能支持读取容器内容。
+ 输出迭代器可用于向容器写入元素，但是不保证能支持读取容器内容。
 
-	只支持自增运算
-
-
-
-
+ 只支持自增运算
 
 #### STL迭代器如何实现
 
@@ -516,29 +461,23 @@ allocate函数：如果要分配的内存大于128字节，就转用第一级分
 
 因此就出现了迭代器，将遍历容器的操作封装起来，可以针对所有容器进行遍历。重载了，->, * , ++, --等操作符
 
-
-
-
-
 1、 迭代器是一种抽象的设计理念，通过迭代器可以在不了解容器内部原理的情况下遍历容器，除此之外，STL中迭代器一个最重要的作用就是作为容器与STL算法的粘合剂。
 
 2、 迭代器的作用就是提供一个遍历容器内部所有元素的接口，因此迭代器内部必须保存一个与容器相关联的指针，然后重载各种运算操作来遍历，其中最重要的是*运算符与->运算符，以及++、--等可能需要重载的运算符重载。这和C++中的智能指针很像，智能指针也是将一个指针封装，然后通过引用计数或是其他方法完成自动释放内存的功能。
 
 3、最常用的迭代器的相应型别有五种：value type、difference type、pointer、reference、iterator catagoly;
 
-
-
 通过迭代器可以在不了解容器内部原理的情况下遍历容器
 
 它的底层实现包含两个重要的部分：萃取技术和模板偏特化。
 
-- 萃取技术
+* 萃取技术
 
-	萃取技术可以进行类型推导，根据迭代器的不同类型处理不同流程。例如vector的迭代器类型为随机访问迭代器，list为双向迭代器
+ 萃取技术可以进行类型推导，根据迭代器的不同类型处理不同流程。例如vector的迭代器类型为随机访问迭代器，list为双向迭代器
 
-- 模板偏特化
+* 模板偏特化
 
-	比较深澳
+ 比较深澳
 
 迭代器是连接容器和算法的一种重要桥梁，通过迭代器可以在不了解容器内部原理的情况下遍历容器。它的底层实现包含两个重要的部分：萃取技术和模板偏特化。
 
@@ -563,7 +502,6 @@ if (TraitsHelper<T>::isPointer)
 else
      ...... // 可以得出当前类型int非指针类型
 ```
-
 
 2、一个理解traits的例子
 
@@ -601,16 +539,13 @@ struct TraitsHelper<float> {
 };
 ```
 
-
   当函数，类或者一些封装的通用算法中的某些部分会因为数据类型不同而导致处理或逻辑不同时，traits会是一种很好的解决方案。
 
   当函数，类或者一些封装的通用算法中的某些部分会因为数据类型不同而导致处理或逻辑不同时，traits会是一种很好的解决方案。
 
 ------------------------------------------------
 版权声明：本文为CSDN博主「~青萍之末~」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/daaikuaichuan/article/details/80717222
-
-
+原文链接：<https://blog.csdn.net/daaikuaichuan/article/details/80717222>
 
 traits技法利用“内嵌型别“的编程技巧与**编译器的template参数推导功能**，增强C++未能提供的关于型别认证方面的能力。常用的有iterator_traits和type_traits。
 
@@ -618,11 +553,11 @@ traits技法利用“内嵌型别“的编程技巧与**编译器的template参�
 
 被称为**特性萃取机**，能够方便的让外界获取以下5种型别：
 
-- value_type：迭代器所指对象的型别
-- difference_type：两个迭代器之间的距离
-- pointer：迭代器所指向的型别
-- reference：迭代器所引用的型别
-- iterator_category：三两句说不清楚，建议看书
+* value_type：迭代器所指对象的型别
+* difference_type：两个迭代器之间的距离
+* pointer：迭代器所指向的型别
+* reference：迭代器所引用的型别
+* iterator_category：三两句说不清楚，建议看书
 
 **type_traits**
 
@@ -656,8 +591,6 @@ template<> struct __type_traits<Shape>{
 };
 ```
 
-
-
 #### 迭代器失效的情况
 
 **插入操作**
@@ -675,8 +608,6 @@ template<> struct __type_traits<Shape>{
 对于list和forward_list，所有的iterator,pointer和refercnce有效。
 
 对于关联容器map来说，如果某一个元素已经被删除，那么其对应的迭代器就失效了，不应该再被使用，否则会导致程序无定义的行为。
-
-
 
 以vector为例：
 
@@ -700,10 +631,6 @@ map/set等关联容器底层是红黑树删除节点不会影响其他节点的�
 
 unordered_(hash) 迭代器意义不大, rehash之后, 迭代器应该也是全部失效.
 
-
-
-
-
 > 迭代器失效的定义：对容器的操作影响了元素的存放位置，称为迭代器失效。
 >
 > 失效情况分为三种：
@@ -711,8 +638,6 @@ unordered_(hash) 迭代器意义不大, rehash之后, 迭代器应该也是全�
 > 1. 当容器调用`erase()`方法后，当前位置到容器末尾元素的所有迭代器全部失效。
 > 2. 当容器调用`insert()`方法后，当前位置到容器末尾元素的所有迭代器全部失效。
 > 3. 如果容器扩容，在其他地方重新又开辟了一块内存。原来容器底层的内存上所保存的迭代器全都失效了。
-
-
 
 **序列式容器失效**
 
@@ -722,18 +647,18 @@ unordered_(hash) 迭代器意义不大, rehash之后, 迭代器应该也是全�
 
 ```c++
 int main() {
-	vector<int> q{ 1,2,3,4,5,6 };
-	// 在这里想把大于2的元素都删除
-	for (auto it = q.begin(); it != q.end(); it++) {
-		if (*it > 2)
-			q.erase(it); // 这里就会发生迭代器失效
-	}
-	// 打印结果
-	for (auto it = q.begin(); it != q.end(); it++) {
-		cout << *it << " ";
-	}
-	cout << endl;
-	return 0;
+ vector<int> q{ 1,2,3,4,5,6 };
+ // 在这里想把大于2的元素都删除
+ for (auto it = q.begin(); it != q.end(); it++) {
+  if (*it > 2)
+   q.erase(it); // 这里就会发生迭代器失效
+ }
+ // 打印结果
+ for (auto it = q.begin(); it != q.end(); it++) {
+  cout << *it << " ";
+ }
+ cout << endl;
+ return 0;
 }
 
 //解决办法
@@ -741,11 +666,11 @@ for(auto it=q.begin();it!=q.end();)
 {
     if(*it>2)
     {
-    	it=q.erase(it); // 这里会返回指向下一个元素的迭代器，因此不需要再自加了
+     it=q.erase(it); // 这里会返回指向下一个元素的迭代器，因此不需要再自加了
     }
     else
     {
-    	it++;
+     it++;
     }
 }
 ```
@@ -777,26 +702,20 @@ for (iter = cont.begin(); iter != cont.end();)
 }
 ```
 
-
-
-
-
-
-
-####  ++it、it++哪个好，为什么？
+#### ++it、it++哪个好，为什么？
 
 ```c++
 // ++i实现代码为：
 int& operator++() {
-	*this += 1;
-	return *this;
+ *this += 1;
+ return *this;
 } 
 
 //i++实现代码为：                 
 int operator++(int) {
-	int temp = *this;                   
-   	++*this;                       
-   	return temp;                  
+ int temp = *this;                   
+    ++*this;                       
+    return temp;                  
 } 
 ```
 
@@ -814,10 +733,6 @@ int operator++(int) {
 vector底层是一个**动态数组**，包含三个迭代器，start和finish之间是已经被使用的空间范围，end_of_storage是整块连续空间包括备用空间的尾部。如图：
 
 <img src="https://cdn.jsdelivr.net/gh/luogou/cloudimg/data/20210906132837.png" alt="在这里插入图片描述" style="zoom: 33%;" />
-
-
-
-
 
 vector是一种序列式容器，其数据安排以及操作方式与array非常类似，两者的唯一差别就是对于空间运用的灵活性，众所周知，array占用的是静态空间，一旦配置了就不可以改变大小，如果遇到空间不足的情况还要自行创建更大的空间，并手动将数据拷贝到新的空间中，再把原来的空间释放。vector则使用灵活的动态空间配置，维护一块**连续的线性空间**，在空间不足时，可以自动扩展空间容纳新元素，做到按需供给。其在扩充空间的过程中仍然需要经历：**重新配置空间，移动数据，释放原空间**等操作。这里需要说明一下动态扩容的规则：以原大小的两倍配置另外一块较大的空间（或者旧长度+新增元素的个数），源码：
 
@@ -863,11 +778,9 @@ int main()
 
 需要注意的是，频繁对vector调用push_back()对性能是有影响的，这是因为每插入一个元素，如果空间够用的话还能直接插入，若空间不够用，则需要重新配置空间，移动数据，释放原空间等操作，对程序性能会造成一定的影响
 
-
-
 #### vector 如何扩容？
 
-https://blog.csdn.net/qq_44918090/article/details/120583540
+<https://blog.csdn.net/qq_44918090/article/details/120583540>
 
 ##### **什么时候扩容**
 
@@ -876,13 +789,11 @@ https://blog.csdn.net/qq_44918090/article/details/120583540
 * 开辟新空间
 * 拷贝元素
 
-- 释放旧空间
+* 释放旧空间
 
 ##### 如何避免扩容导致效率低
 
 如果要避免扩容而导致程序效率过低问题，其实非常简单：**如果在插入之前，可以预估vector存储元素的个数，提前将底层容量开辟好即可。**如果插入之前进行reserve，只要空间给足，则插入时不会扩容，如果没有reserve，则会边插入边扩容，效率极其低下。
-
-
 
 ##### 为什么选择以倍数扩容
 
@@ -891,13 +802,12 @@ https://blog.csdn.net/qq_44918090/article/details/120583540
 
   ![在这里插入图片描述](https://img-blog.csdnimg.cn/9019c9bbbcc842dbad0aedbafa7dc73a.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5qOu5piO5biu5aSn5LqO6buR6JmO5biu,size_15,color_FFFFFF,t_70,g_se,x_16)
 
-
 2. **以倍数方式进行扩容**
 假设有n个元素需要像vector插入，倍增因子为m,则完成n个元素像vector的push_back操作需要扩容log以m为低n的次方。比如：以二倍方式扩容，当向vector插入1000个元素，需要扩容log以2为底1000次方，就是扩容10次，第i次增容会把m的i次方个元素搬移到新空间，n次push_back的总操作次数为：
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/02900243e1624319b16f5ec2e9c1c315.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5qOu5piO5biu5aSn5LqO6buR6JmO5biu,size_15,color_FFFFFF,t_70,g_se,x_16)
 
-​	可以看到以倍数的方式扩容比以等长个数的扩容方式效率高。
+​ 可以看到以倍数的方式扩容比以等长个数的扩容方式效率高。
 
 3. **为什么选择1.5倍或者2倍方式扩容，而不是3倍、4倍**
     扩容原理为：申请新空间，拷贝元素，释放旧空间，理想的分配方案是在第N次扩容时如果能复用之前N-1次释放的空间就太好了，如果按照2倍方式扩容，第i次扩容空间大小如下：$1,2,4,8,16,32......2^i$
@@ -906,8 +816,8 @@ https://blog.csdn.net/qq_44918090/article/details/120583540
 
   比如：第4次扩容时，前2次空间已经释放，第3次空间还没有释放(开辟新空间、拷贝元素、释放旧空间)，即前面释放的空间只有$1 + 2 = 3$，假设第 3 次空间已经释放才只有$1+2+4=7$，而第四次需要 8 个空间，因此无法使用之前已释放的空间，但是按照小于2倍方式扩容，多次扩容之后就可以复用之前释放的空间了。如果倍数超过2倍(包含2倍)方式扩容会存在：
 
-  * 空间浪费可能会比较高，比如：扩容后申请了64个空间，但只存了33个元素，有接近一半的空间没有使用。
-  * 无法使用到前面已释放的内存。
+* 空间浪费可能会比较高，比如：扩容后申请了64个空间，但只存了33个元素，有接近一半的空间没有使用。
+* 无法使用到前面已释放的内存。
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/5ccdeb863e3844938b7cc24eea990e91.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5qOu5piO5biu5aSn5LqO6buR6JmO5biu,size_14,color_FFFFFF,t_70,g_se,x_16)
 
@@ -915,8 +825,6 @@ https://blog.csdn.net/qq_44918090/article/details/120583540
 **而使用1.5倍（k=1.5)扩容时，在几次扩展以后，可以重用之前的内存空间了。**
 
 因为STL标准并没有严格说明需要按何种方式进行扩容，因此不同的实现厂商都是按照自己的方式扩容的，即：linux下是按照2倍的方式扩容的，而vs下是按照1.5倍的方式扩容的。
-
-
 
 **1.5倍扩容和2倍扩容的区别**
 
@@ -926,8 +834,6 @@ https://blog.csdn.net/qq_44918090/article/details/120583540
 2. 扩容因子越小，需要再分配的可能性就更高，多次扩容耗时。空闲空间较少，内存利用率高。
 
 因此，小规模数组，添加元素不频繁的，建议使用扩容因子更小的。当数据规模越大，插入更频繁，大扩容因子更适合。
-
-
 
 ##### Windows和Linux的扩容底层原理
 
@@ -948,10 +854,8 @@ Windows中堆管理系统会对释放的堆块进行合并,因此:vs下的vector
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/b092797cb7a54d8ea79d7b802da3a97d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5qOu5piO5biu5aSn5LqO6buR6JmO5biu,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-- **vector在push_back以成倍增长可以在均摊后达到O(1)的事件复杂度，相对于增长指定大小的O(n)时间复杂度更好。**
-- **为了防止申请内存的浪费，现在使用较多的有2倍与1.5倍的增长方式，而1.5倍的增长方式可以更好的实现对内存的重复利用。**
-
-
+* **vector在push_back以成倍增长可以在均摊后达到O(1)的事件复杂度，相对于增长指定大小的O(n)时间复杂度更好。**
+* **为了防止申请内存的浪费，现在使用较多的有2倍与1.5倍的增长方式，而1.5倍的增长方式可以更好的实现对内存的重复利用。**
 
 #### vector的增加删除都是怎么做的？
 
@@ -959,40 +863,26 @@ Windows中堆管理系统会对释放的堆块进行合并,因此:vs下的vector
 
 push_back：在 vector 容器的尾部添加一个元素
 
-新增元素：vector通过一个连续的数组存放元素，如果集合已满，在新增数据的时候，就要分配一块更大的内存，将原来的数据复制过来，释放之前的内存，在插入新增的元素；对vector的任何操作，一旦引起空间重新配置，指向原vector的所有迭代器就都失效了 
+新增元素：vector通过一个连续的数组存放元素，如果集合已满，在新增数据的时候，就要分配一块更大的内存，将原来的数据复制过来，释放之前的内存，在插入新增的元素；对vector的任何操作，一旦引起空间重新配置，指向原vector的所有迭代器就都失效了
 
 初始时刻vector的capacity为0，塞入第一个元素后capacity增加为1
 
-
-
 insert：在 vector 容器的指定位置插入一个或多个元素
 
-
-
 emplace_back：其功能和 push_back() 相同，都是在 vector 容器的尾部添加一个元素
-
-
 
 emplace_back() 和 push_back() 的区别，就在于底层实现的机制不同。
 
 * push_back() 向容器尾部添加元素时，首先会创建这个元素，然后再将这个元素拷贝或者移动到容器中（如果是拷贝的话，事后会自行销毁先前创建的这个元素）
 * emplace_back() 在实现时，则是直接在容器尾部创建这个元素，省去了拷贝或移动元素的过程
 
-
-
-
-
 **删除元素**
 
 pop_back：成员函数pop_back()可以删除最后一个元素
 
-
-
 erase：
 
 vector 中 erase的作用是删除掉某个位置position或一段区域（begin, end)中的元素，减少其size，**返回被删除元素下一个元素的位置**。
-
-
 
 remove：
 
@@ -1004,16 +894,10 @@ vector中remove的作用是将范围内为val的值都remove到后面，**返回
 vec.erase(remove(vec.begin(),vec.end(),x),vec.end());
 ```
 
-
-
 remove 和 erase 的区别
 
 * erase和remove的区别在于执行函数之后返回值不同
 * erase 后 size 会改变，remove 后 size 不会改变
-
-
-
-
 
 #### vector如何释放空间?
 
@@ -1033,15 +917,12 @@ vector().swap(Vec); //清空Vec的内存；
 * `vec.shrink_to_fit()`：请求容器降低其capacity和size匹配。
 * `vec.clear();vec.shrink_to_fit();`：清空内容，且释放内存。
 
-
-
 #### `vector<bool>` 有什么问题？
 
 具体来讲，不推荐使用 `vector<bool>` 的原因有以下 2 个：
 
-* 严格意义上讲，`vector<bool> `并不是一个 STL 容器；
+* 严格意义上讲，`vector<bool>`并不是一个 STL 容器；
 * `vector<bool>` 底层存储的并不是 bool 类型值。
-	       
 
 值得一提的是，对于是否为 STL 容器，C++ 标准库中有明确的判断条件，其中一个条件是：如果 cont 是包含对象 T 的 STL 容器，且该容器中重载了 [ ] 运算符（即支持 operator[]），则以下代码必须能够被编译：
 
@@ -1067,7 +948,7 @@ C++ 标准中解决这个问题的方案是，令 operator[] 返回一个代理�
 
 同样对于指针来说，其指向的最小单位是字节，无法另其指向单个比特位。综上所述可以得出一个结论，即上面第 2 行代码中，用 = 赋值号连接 bool *p 和 &cont[0] 是矛盾的。
 
-由于` vector<bool>` 并不完全满足 C++ 标准中对容器的要求，所以严格意义上来说它并不是一个 STL 容器。可能有读者会问，既然 `vector<bool>` 不完全是一个容器，为什么还会出现在 C++ 标准中呢？
+由于`vector<bool>` 并不完全满足 C++ 标准中对容器的要求，所以严格意义上来说它并不是一个 STL 容器。可能有读者会问，既然 `vector<bool>` 不完全是一个容器，为什么还会出现在 C++ 标准中呢？
 
 这和一个雄心勃勃的试验有关，还要从前面提到的代理对象开始说起。由于代理对象在 C++ 软件开发中很受欢迎，引起了 C++ 标准委员会的注意，他们决定以开发 `vector<bool>` 作为一个样例，来演示 STL 中的容器如何通过代理对象来存取元素，这样当用户想自己实现一个基于代理对象的容器时，就会有一个现成的参考模板。
 
@@ -1080,8 +961,6 @@ C++ 标准中解决这个问题的方案是，令 operator[] 返回一个代理�
 * 要知道，deque 容器几乎具有 vecotr 容器全部的功能（拥有的成员方法也仅差 reserve() 和 capacity()），而且更重要的是，deque 容器可以正常存储 bool 类型元素。
 * 还可以考虑用 bitset 代替 `vector<bool>`，其本质是一个模板类，可以看做是一种类似数组的存储结构。和后者一样，bitset 只能用来存储 bool 类型值，且底层存储机制也采用的是用一个比特位来存储一个 bool 值。和 vector 容器不同的是，bitset 的大小在一开始就确定了，因此不支持插入和删除元素；另外 bitset 不是容器，所以不支持使用迭代器
 
-
-
 #### `vector` 元素类型可以是引用吗，void 呢？
 
 vector中的元素有两个要求：
@@ -1093,11 +972,7 @@ vector中的元素有两个要求：
 
 容器开辟的时候还没有值，无法初始化，你咋能用引用
 
-
-
 **`vector<void>` 合理吗？没法通过编译**
-
-
 
 #### 线程安全 vector 设计
 
@@ -1114,8 +989,6 @@ v.resize(1000);
 ```
 
 注意是resize，不是reserve！
-
-
 
 举一个简单的例子：
 
@@ -1226,8 +1099,6 @@ public:
 };
 ```
 
-
-
 ##### **多线程安全的vector设计---借助thread_local变量**
 
 thread_local变量简介
@@ -1312,11 +1183,9 @@ BM_VEC_THL/2      693148 ns       123333 ns         5723
 2. RVO机制使用父栈帧（或任意内存块）来分配返回值的空间，来避免对返回值的复制。也就是将Base fun();改为void fun(Base &x);
 
 作者：spiritsaway
-链接：https://www.zhihu.com/question/27000013/answer/34846612
+链接：<https://www.zhihu.com/question/27000013/answer/34846612>
 来源：知乎
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
-
-
 
 根据effective modern c++中介绍，编译器进行RVO条件有二
 
@@ -1324,8 +1193,6 @@ BM_VEC_THL/2      693148 ns       123333 ns         5723
 2. return的是一个局部对象
 
 现在我们来考虑下面这个语句
-
-
 
 ```cpp
 return std::move(w)
@@ -1348,13 +1215,9 @@ std::vector<int> &&rval_ref = return_vector();
 
 此时，并不调用RVO，拷贝构造临时对象，同时临时对象的生命周期延长至与rval_ref相同，等价于下面的代码
 
-
-
 ```cpp
 const std::vector<int>& rval_ref = return_vector();
 ```
-
-
 
 第二个例子：
 
@@ -1368,13 +1231,9 @@ std::vector<int>&& return_vector(void)
 std::vector<int> &&rval_ref = return_vector();
 ```
 
-
-
 该代码会造成一个运行时错误，因为rval_ref最终指向被析构了的tmp 。类似于返回了内部对象的[左值引用](https://www.zhihu.com/search?q=左值引用&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A"34846612"})。
 
 第三个例子：
-
-
 
 ```cpp
 std::vector<int> return_vector(void)
@@ -1389,8 +1248,6 @@ std::vector<int> &&rval_ref = return_vector();
 
 最好的例子：
 
-
-
 ```cpp
 std::vector<int> return_vector(void)
 {
@@ -1401,8 +1258,6 @@ std::vector<int> rval_ref = return_vector();
 ```
 
 该代码会调用RVO，不生成临时对象 ，[返朴归真](https://www.zhihu.com/search?q=返朴归真&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A"34846612"})了。
-
-
 
 #### emplace_back和push_back
 
@@ -1416,8 +1271,6 @@ emplace_back() 和 push_back() 的区别，就在于底层实现的机制不同�
 2. 然后需要调用移动构造函数或拷贝构造函数将这个临时对象放入容器中（如果是拷贝的话，事后会自行销毁先前创建的这个元素。当拷贝构造函数和移动构造函数同时存在时，会优先调用移动构造函数。）
 3. 原来的临时变量释放。这样造成的问题是临时变量申请的资源就浪费
 
-
-
 **emplace_back**
 
 ```c++
@@ -1427,15 +1280,9 @@ void emplace_back (Args&&... args);
 
 emplace_back() 在实现时，则是直接在容器尾部创建这个元素，省去了拷贝或移动元素的过程
 
-
-
-
-
 #### 一个vetor内存很大但实际我只用了很小一部分怎么解决
 
 swap
-
-
 
 #### 函数里的vector存在堆上还是栈上，为什么？
 
@@ -1448,8 +1295,6 @@ swap
 C++语言中，所有`new`和`malloc`创建的变量均存放在堆区，这已经是一个共识。但是鲜为人知的是，STL库中的容器虽没有经过这两个关键字创建，但同样是存放在堆区。这与动态数组性质相同。如果从汇编角度观察便会发现，容器均调用了`allocator`来创建。
 
 vector就是在堆上的，底层由allocator去维护，所以函数退出时，普通定义的vector也可以由allocator自动回收
-
-
 
 std::vector的默认实现是把内部数据分配在堆上，所以vector对象本身不需要再用new。vector对象本身不大
 
@@ -1484,8 +1329,6 @@ unordered_map是C++ 11新添加的容器，底层机制是哈希表，通过hash
 
 从两者的底层机制和特点可以看出：map适用于有序数据的应用场景，unordered_map适用于高效查询的应用场景
 
-
-
 #### （multi）map/set是怎么实现的
 
 map 、set、multiset、multimap的底层实现都是红黑树，epoll模型的底层数据结构也是红黑树，linux系统中CFS进程调度算法，也用到红黑树。
@@ -1506,31 +1349,21 @@ map 、set、multiset、multimap的底层实现都是红黑树，epoll模型的�
 
   对于STL里的map容器，count方法与find方法，都可以用来判断一个key是否出现，mp.count(key) > 0统计的是key出现的次数，因此只能为0/1，而mp.find(key) != mp.end()则表示key存在。
 
-
-
 **特点**
 
 map和set的增删改查速度为都是logn，是比较高效的。
-
-
 
 * set和multiset会根据特定的排序准则自动将元素排序，set中元素不允许重复，multiset可以重复。
 * set的特性是，所有元素都会根据元素的值自动被排序（默认升序），set元素的键值就是实值，实值就是键值，set不允许有两个相同的键值
 * **set不允许迭代器修改元素的值，其迭代器是一种constance iterators**
 
-
-
 * map和multimap将key和value组成的pair作为元素，根据key的排序准则自动将元素排序（因为红黑树也是二叉搜索树，所以map默认是按key排序的），map中元素的key不允许重复，multimap可以重复。
 * map的特性是所有元素会根据键值进行自动排序。map中所有的元素都是pair，拥有键值(key)和实值(value)两个部分，并且不允许元素有相同的key
 * 一旦map的key确定了，那么是无法修改的，但是可以修改这个key对应的value，**因此map的迭代器既不是constant iterator，也不是mutable iterator**
 
-
-
 **如何同时用 红黑树分别实现 map 和 set**
 
 在这里我们定义了一个模版参数，如果它是key那么它就是set，如果它是map，那么它就是map；底层是红黑树，实现map的红黑树的节点数据类型是key+value，而实现set的节点数据类型是value
-
-
 
 **为不用二叉搜索树：**
 
@@ -1539,8 +1372,6 @@ map和set的增删改查速度为都是logn，是比较高效的。
 **为什么不用 AVL 树：**
 
 对于STL中的set和map来说，需要进行频繁的插入和删除，而AVL这种严格平衡二叉树，插入删除太频繁会导致左旋右旋操作频繁，影响性能，AVL只适合查找较多但插入、删除不多的操作。而红黑树也是一种平衡二叉树，但只要求最长路径不超过最短路径的两倍，因此，更适合插入、删除操作较多的结构。
-
-
 
 #### set和map的区别，multimap和multiset的区别
 
@@ -1552,8 +1383,6 @@ map则提供两种数据类型的接口，分别放在key和value的位置上，
 
 multimap和map的唯一区别就是：multimap调用的是红黑树的insert_equal(),可以重复插入而map调用的则是独一无二的插入insert_unique()，multiset和set也一样，底层实现都是一样的，只是在插入的时候调用的方法不一样。
 
-
-
 #### 为何map和set的插入删除效率比其他序列容器高，而且每次insert之后，以前保存的iterator不会失效？
 
 用了红黑树数据结构
@@ -1561,8 +1390,6 @@ multimap和map的唯一区别就是：multimap调用的是红黑树的insert_equ
 因为存储的是结点，不需要内存拷贝和内存移动。
 
 因为插入操作只是结点指针换来换去，结点内存没有改变。而iterator就像指向结点的指针，内存没变，指向内存的指针也不会变。
-
-
 
 #### 为何map和set不能像vector一样有个reserve函数来预分配数据?
 
@@ -1794,15 +1621,11 @@ list的空间管理默认采用alloc作为空间配置器，为了方便的以�
 
 由于list的双向特性，其支持在头部（front)和尾部（back)两个方向进行push和pop操作，当然还支持erase，splice，sort，merge，reverse，sort等操作，这里不再详细阐述。
 
-
-
  list的底层是一个**双向链表**，以结点为单位存放数据，结点的地址在内存中不一定连续，每次插入或删除一个元素，就配置或释放一个元素空间。
 
   list不支持随机存取，**如果需要大量的插入和删除**，而不关心随即存取
 
 ![在这里插入图片描述](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWFnZXMyMDE1LmNuYmxvZ3MuY29tL2Jsb2cvNzc5MzY4LzIwMTYxMC83NzkzNjgtMjAxNjEwMjQxNDI2NTU4NTktMTUyMjI3NzQ5Ny5wbmc?x-oss-process=image/format,png)
-
-
 
 #### STL中stack和queue的实现
 
@@ -1956,13 +1779,13 @@ int main()
 list不支持随机存储，适用于对象大，对象数量变化频繁，插入和删除频繁，比如写多读少的场景。
 
 * 非连续存储
-	* list 是一个环状双向链表，所以它只需要一个指针，每个节点包括三个信息：元素本身，指向前一个元素的节点（prev）和指向下一个元素的节点（next）
-	* 不再能够像vector一样以普通指针作为迭代器
-	* 其节点不保证在存储空间中连续存在
+  * list 是一个环状双向链表，所以它只需要一个指针，每个节点包括三个信息：元素本身，指向前一个元素的节点（prev）和指向下一个元素的节点（next）
+  * 不再能够像vector一样以普通指针作为迭代器
+  * 其节点不保证在存储空间中连续存在
 * 访问：随机存取效率很低 O（N），不能用下标直接访问到某个位置的元素。要访问list里的元素只能遍历，不过你要是只需要访问list的最后N个元素的话，可以用反向迭代器来遍历
 * 增删改：
-	* list不像vector那样有可能在空间不足时做重新配置、数据移动的操作，所以插入前的所有迭代器在插入操作之后都仍然有效
-	* 由于链表特性可以高效地增删，改变指针的指向即可。
+  * list不像vector那样有可能在空间不足时做重新配置、数据移动的操作，所以插入前的所有迭代器在插入操作之后都仍然有效
+  * 由于链表特性可以高效地增删，改变指针的指向即可。
 
 **deque**
 
@@ -1970,8 +1793,8 @@ list不支持随机存储，适用于对象大，对象数量变化频繁，插�
 
 * deque是一种双向开口的连续线性空间，所谓双向开口，意思是可以在头尾两端分别做元素的插入和删除操作；可以在头尾两端分别做元素的插入和删除操作
 * deque和vector最大的差异
-	* 一在于deque允许常数时间内对起头端进行元素的插入或移除操作
-	* 二在于deque没有所谓容量概念，因为它是动态地以分段连续空间组合而成，随时可以增加一段新的空间并链接起来，deque没有所谓的空间保留功
+  * 一在于deque允许常数时间内对起头端进行元素的插入或移除操作
+  * 二在于deque没有所谓容量概念，因为它是动态地以分段连续空间组合而成，随时可以增加一段新的空间并链接起来，deque没有所谓的空间保留功
 
 **vector**
 
@@ -1983,8 +1806,6 @@ vector可以随机存储元素（即可以通过公式直接计算出元素地�
 * 它与数组最大的区别就是vector不需程序员自己去考虑容量问题，库里面本身已经实现了容量的动态增长，而数组需要程序员手动写入扩容函数进形扩容。
 
 * vector的随机访问效率高，但在插入和删除时（不包括尾部）需要挪动数据，不易操作。
-
-
 
 ### deque
 
@@ -2042,12 +1863,10 @@ struct __deque_iterator
 
 deque迭代器的“++”、“--”操作是远比vector迭代器繁琐，其主要工作在于缓冲区边界，如何从当前缓冲区跳到另一个缓冲区，当然deque内部在插入元素时，如果map中node数量全部使用完，且node指向的缓冲区也没有多余的空间，这时会配置新的map（2倍于当前+2的数量）来容纳更多的node，也就是可以指向更多的缓冲区。在deque删除元素时，也提供了元素的析构和空闲缓冲区空间的释放等机制。
 
-
-
 #### deque 和 vector 的区别
 
-- vector是单向开口的连续区间，deque是双向开口的连续区间（可以在头尾两端进行插入和删除操作）
-- deque没有提供空间保留功能，也就是没有capacity这个概念，而vector提供了空间保留功能。即vector有capacity和reserve函数，deque 和 list一样，没有这两个函数。
+* vector是单向开口的连续区间，deque是双向开口的连续区间（可以在头尾两端进行插入和删除操作）
+* deque没有提供空间保留功能，也就是没有capacity这个概念，而vector提供了空间保留功能。即vector有capacity和reserve函数，deque 和 list一样，没有这两个函数。
 
 deque是在功能上合并了vector和list。
 

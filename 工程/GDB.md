@@ -987,7 +987,7 @@ $2 = 3
 
 调试已经运行的进程有两种方法：一种是gdb启动时，指定进程的ID：gdb program processID（也可以用-p或者--pid指定进程ID，例如：gdb program -p=10210）。以上面代码为例，用“ps”命令已经获得进程ID为10210：
 
-```
+```shell
 bash-3.2# gdb -q a 10210
 Reading symbols from /data/nan/a...done.
 Attaching to program `/data/nan/a', process 10210
@@ -1016,7 +1016,7 @@ Loaded symbols for /lib/ld.so.1
 
 如果嫌每次ps查看进程号比较麻烦，请尝试如下脚本
 
-```
+```shell
 # 保存为xgdb.sh（添加可执行权限）
 # 用法 xgdb.sh a 
 prog_bin=$1
@@ -1027,7 +1027,7 @@ gdb attach $pid
 
 另一种是先启动gdb，然后用“attach”命令“附着”在进程上：
 
-```
+```shell
 bash-3.2# gdb -q a
 Reading symbols from /data/nan/a...done.
 (gdb) attach 10210
