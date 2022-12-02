@@ -51,7 +51,7 @@ SSH是一种协议标准，用于在网络主机之间进行加密的一种协�
 
 > 私钥是 Server 端独有，这就保证了 Client 的登录信息即使在网络传输过程中被窃据，也没有私钥进行解密，保证了数据的安全性，这充分利用了非对称加密的特性。
 
-###### 这样就一定安全了吗？
+### 这样就一定安全了吗？
 
 上述流程会有一个问题：**Client 端如何保证接受到的公钥就是目标 Server 端的？** 如果一个攻击者中途拦截 Client 的登录请求，向其发送自己的公钥，Client 端用攻击者的公钥进行[数据加密](https://cloud.tencent.com/solution/domesticencryption?from=10680)。攻击者接收到加密信息后再用自己的私钥进行解密，不就窃取了 Client 的登录信息了吗？这就是所谓的中间人攻击。
 
@@ -59,13 +59,13 @@ SSH是一种协议标准，用于在网络主机之间进行加密的一种协�
 
 图1-4：中间人攻击
 
-######
 
-###### **2.1 SSH 中是如何解决这个问题的？**
 
-######
+### **2.1 SSH 中是如何解决这个问题的？**
 
-##### **2.1.1 基于口令的认证**
+
+
+#### **2.1.1 基于口令的认证**
 
 从上面的描述可以看出，问题就在于**如何对 Server 的公钥进行认证？**在 https中可以通过 CA 来进行公证，可是 SSH 的 **Publish key**和 **Private key** 都是自己生成的，没法公证。
 
@@ -90,7 +90,7 @@ Password: (enter password)
 
 该 host 已被确认，并被追加到文件 **known_hosts** 中，然后就需要输入密码，之后的流程就按照图 1-3 进行。
 
-##### **2.1.2 基于公钥认证**
+#### **2.1.2 基于公钥认证**
 
 在上面介绍的登录流程中可以发现，每次登录都需要输入密码，很麻烦。SSH 提供了另外一种可以免去输入密码过程的登录方式：公钥登录。流程如下：
 
@@ -116,7 +116,7 @@ GitHub 中 SSH keys 设置
 
 ## **3. SSH 实践**
 
-###### **3.1 生成密钥操作**
+### **3.1 生成密钥操作**
 
 经过上面的原理分析，下面三行命令的含义应该很容易理解了：
 
@@ -126,7 +126,7 @@ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chmod 0600 ~/.ssh/authorized_keys
 ```
 
-复制
+
 
 ssh-keygen 是用于生产密钥的工具。
 
@@ -153,7 +153,7 @@ SSH 结构简图
 
 > 需要注意的是：一台主机可能既是 Client，也是 Server。所以会同时拥有authorized_keys 和 known_hosts。
 
-###### **3.2 登录操作**
+### **3.2 登录操作**
 
 ```javascript
 # 以用户名user，登录远程主机host
@@ -166,15 +166,15 @@ $ ssh host
 $ ssh -p 2017 user@host
 ```
 
-### **4. 其它一些补充**
+## **4. 其它一些补充**
 
 下面关于 SSH 的 **known_hosts** 机制的一些补充。
 
-##### **4.1 known_hosts 中存储的内容是什么？**
+### **4.1 known_hosts 中存储的内容是什么？**
 
 known_hosts 中存储是已认证的远程主机 host key，每个 SSH Server 都有一个 **secret, unique ID, called a host key**。
 
-##### **4.2 host key 何时加入 known_hosts 的？**
+### **4.2 host key 何时加入 known_hosts 的？**
 
 当我们第一次通过 SSH 登录远程主机的时候，Client 端会有如下提示：
 
@@ -190,12 +190,115 @@ Are you sure you want to continue connecting (yes/no)?
 example.hostname.com ssh-rsa AAAAB4NzaC1yc2EAAAABIwAAAQEA...
 ```
 
-##### **4.3 为什么需要 known_hosts？**
+### **4.3 为什么需要 known_hosts？**
 
 最后探讨下为什么需要 known_hosts，这个文件主要是通过 Client 和 Server的双向认证，从而避免中间人（**man-in-the-middle attack**）攻击，每次Client 向 Server 发起连接的时候，不仅仅 Server 要验证 Client 的合法性，Client 同样也需要验证 Server 的身份，SSH Client 就是通过 known_hosts 中的 host key 来验证 Server 的身份的。
 
 > 这种方案足够安全吗？当然不，比如第一次连接一个未知 Server 的时候，known_hosts 还没有该 Server 的 host key，这不也可能遭到**中间人**攻击吗？这可能只是安全性和可操作性之间的折中吧。
 
-### **5. 总结**
 
-本文以图文方式对 SSH 原理进行解析（主要指远程登录，没有涉及端口转发等功能）。同时分析了非对称加密的特性，以及在实践过程中如何对加密操作进行改进。
+
+## SSH 如何配置
+
+### 连接方式
+
+基本的ssh连接方法是
+
+```bash
+ssh username@ip
+```
+
+`username`表示该机器的用户名，`ip`表示对应的ip地址。比如，笔者在`10.22.75.212`的用户名是`qiangzibro`，只需要在终端输入
+
+```bash
+ssh qiangzibro@10.22.75.212
+```
+
+接下来，终端会提示你一条信息，输入yes回车，会提示你输入密码，就像这样。
+
+
+
+![img](https://pic3.zhimg.com/v2-bbc1298be24fdfb6a63775e751f21a3a_b.png)
+
+
+
+先别着急使用下去，稍加配置可以让我们使用得更加舒心、安全。
+
+### 基本配置
+
+#### 给ip地址取别名
+
+长长的ip地址不好记，给ip地址取个别名吧！在mac或者linux上，可以编辑`/etc/hosts`这个文件，由于是系统文件，需要使用管理员权限。编辑器可以自选，笔者使用的是`neovim`
+
+```bash
+sudo nvim /etc/hosts
+```
+
+比如我想给`10.22.75.177`取名叫`lab1`，添加下面一行：
+
+```bash
+10.22.75.177 lab1
+```
+
+在以后的使用中，凡是需要用到ip地址，可以直接用别名代理，比如
+
+```bash
+ping lab1
+```
+
+#### 给特定主机上的用户取别名
+
+ip地址取完别名后，我们可以使用类似
+
+```bash
+ssh qiangzibro@lab1
+```
+
+的方式进行连接，实际上，这样的连接方式还可以进一步简化。
+
+也就是说，给`qiangzibro@lab1`也取个别名
+
+不建议自己造轮子，早年间笔者曾写过比如`alias sshqiang="ssh qiangzibro@lab1”`的别名，其实没有太大别要，因为进行下面配置可以让以后使用更方便：
+
+类unix系统（mac或者linux）可以直接编辑`~/.ssh/config`这个文件，如果没有，自己创建一个。语法如下
+
+```bash
+Host l1
+HostName lab1
+Port 22
+User qiangzibro
+```
+
+配置很简单，四行分别表示别名、远程主机ip、远程主机ssh端口、远程主机用户名。然后我们可以用
+
+```bash
+ssh l1
+```
+
+进行连接。
+
+#### 免密码登录
+
+经常使用密码登录，一个问题是有安全风险，另外一个是麻烦，太懒了啊，每次输密码多麻烦！ssh还提供一种使用密匙验证的方式进行登录，相信大家在配置github免密登录时也遇到过。百度百科上对其解释如下：
+
+> 原理是你必须为自己创建一对密匙，并把公用密匙放在需要访问的服务器上。如果你要连接到SSH服务器上，客户端软件就会向服务器发出请求，请求用你的密匙进行安全验证。服务器收到请求之后，先在该服务器上你的主目录下寻找你的公用密匙，然后把它和你发送过来的公用密匙进行比较。如果两个密匙一致，服务器就用公用密匙加密“质询”（challenge）并把它发送给客户端软件。客户端软件收到“质询”之后就可以用你的私人密匙解密再把它发送给服务器。
+
+也就是说，把本地公钥拷贝到远程服务器上，就不需要每次登录使用密码了。具体讲，是把本地`~/.ssh/id_rsa.pub`内的内容拷贝到远程`~/.ssh/authorized_keys`文件里。首先看看本地有没有公钥：
+
+```text
+cat ~/.ssh/id_rsa.pub
+```
+
+没有，则生成一个
+
+```text
+ssh-keygen -t rsa
+```
+
+一路回车按下去，便生成在了`~/.ssh/id_rsa.pub`
+
+你可以使用复制粘贴最原始的方法，而这种操作也有命令简化了：
+
+```bash
+ssh-copy-id l1 # 将本地公钥拷贝到远程名为l1用户下，也就是/home/qiangzibro/.ssh/authorized_keys里
+```
