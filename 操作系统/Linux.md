@@ -1,12 +1,10 @@
 # Linux命令56问
 
-https://www.nowcoder.com/discuss/813169
+<https://www.nowcoder.com/discuss/813169>
 
-https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9%97%AE.md
+<https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9%97%AE.md>
 
 目录如下，请善用CTRL+F查找
-
-
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934326496/image-20211126214357811.png)
 
@@ -20,11 +18,7 @@ https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9
 
 - uptime：系统性能命令的精简版
 
-
-
-- 参考：https://www.jb51.net/article/135852.htm
-
-
+- 参考：<https://www.jb51.net/article/135852.htm>
 
 - 第一行是任务队列信息(系统运行状态及平均负载)，与uptime命令结果相同
 - up部分的字段信息代表了当前系统的运行时间，即未重启时间，时间越长系统越稳定
@@ -32,12 +26,8 @@ https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9
   - 单核情况下，1.0为满负荷，超过1为超负荷，理想值为0.7
   - 多核情况下，CPU核数*0.7=理想负荷
 
-
-
 - 第二行是tasks任务进程相关信息
 - 包括了进程总数、正在运行的进程数、睡眠进程数、停止进程数和僵尸进程数(zombie)
-
-
 
 - 第三行是CPU相关信息，如果是多核CPU，按数字1可显示各核CPU信息，此时1行将转为Cpu核数行，数字1可以来回切换
   - us 用户空间占用CPU百分比，例如：Cpu(s): 12.7%us
@@ -49,17 +39,11 @@ https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9
   - si CPU服务软中断所耗费的时间总额，例如：1.8%si
   - st Steal time 虚拟机被hypervisor偷去的CPU时间（如果当前处于一个hypervisor下的vm，实际上hypervisor也是要消耗一部分CPU处理时间的）
 
-
-
 - 第四行是内存相关信息（Mem: 12196436k total, 12056552k used, 139884k free, 64564k buffers）
   - 用作内核缓存的内存量，例如：64564k buffers
 
-
-
 - 第五行是Swap 交换分区相关信息（Swap: 2097144k total, 151016k used, 1946128k free, 3120236k cached）
   - 缓冲的交换区总量，3120236k cached
-
-
 
 - 进程信息
 
@@ -93,8 +77,6 @@ https://gitee.com/Stard/xkzz-study/blob/master/docs/Linux%E5%91%BD%E4%BB%A456%E9
     y: WCHAN = (Sleeping in Function) 若该进程在睡眠，则显示睡眠中的系统函数名
     z: Flags = (Task Flags <sched.h>) 任务标志，参考 sched.h
     X: COMMAND = (Command name/line) 命令名/命令行
-
-
 
 - 命令选项
   - -b：以批处理模式操作；
@@ -150,8 +132,6 @@ st：来自于一个虚拟机偷取的CPU时间比
 - 应用程序可用内存/系统物理内存 < 20% 内存不足，需要增加内存
 - 20% <  应用程序可用内存/系统物理内存 < 70%，表示内存基本够用
 
-
-
 free -h：以人类能看懂的方式查看物理内存
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934093604/image-20200326170217637.png)
@@ -167,8 +147,6 @@ free -g：以GB为单位，查看物理内存
 - df查看磁盘分区的使用情况，了解磁盘总量及用量，默认单位为KB
 - du命令用于查看文件、目录在磁盘中占用的空间的大小
   - 与ls -h不同之处在于，ls -h是查看文件或目录的实际大小，而du是查看文件或者目录在磁盘中占用的块区的大小。由于块大小为4k，且同一块中只能存放一个文件，因此当文件实际大小不足4k时，du命令的显示结果依然为4k。
-
-
 
 格式：`df -h  /`  (-h：human，表示以人类能看到的方式换算)
 
@@ -238,7 +216,7 @@ svctm的值与await的值很接近，表示几乎没有I/O等待，磁盘性能�
   - cp
   - chmod 修改权限
 - 进程管理
-  - ps  显示进程信息 
+  - ps  显示进程信息
   - kill  杀死进程
 - 系统管理
   - top 系统运行信息
@@ -268,12 +246,12 @@ svctm的值与await的值很接近，表示几乎没有I/O等待，磁盘性能�
 
 ## 10. cp命令的作用？
 
-- cp [选项] source dest    
+- cp [选项] source dest
 - -r  递归复制整个文件夹
 
 ## 11. rm命令的作用？
 
-- rm [选项]  deleteFile      
+- rm [选项]  deleteFile
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934093937/1606709194257.png)
 
@@ -315,7 +293,7 @@ svctm的值与await的值很接近，表示几乎没有I/O等待，磁盘性能�
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934094256/1606719764876.png)
 
-##  17. >和>>的作用和区别？
+## 17. >和>>的作用和区别？
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934094325/1606719825771.png)
 
@@ -325,18 +303,15 @@ svctm的值与await的值很接近，表示几乎没有I/O等待，磁盘性能�
 
 - 类似于快捷方式
 
-
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934094386/1606719934509.png)
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934094541/1606719948770.png)
-
-
 
 ## 19. date命令的作用？
 
 - 时间日期类
 
-- date   
+- date
   - 显示当前时间
 - 设置系统当前时间
 
@@ -386,7 +361,7 @@ svctm的值与await的值很接近，表示几乎没有I/O等待，磁盘性能�
 
 ## 26. df命令的作用？
 
-- 查看磁盘空间使用情况 
+- 查看磁盘空间使用情况
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934095150/1606721623318.png)
 
@@ -422,7 +397,7 @@ svctm的值与await的值很接近，表示几乎没有I/O等待，磁盘性能�
 
 - 查看系统健康状态
 
-- https://www.cnblogs.com/loved-wangwei/p/8986287.html
+- <https://www.cnblogs.com/loved-wangwei/p/8986287.html>
 
 ![img](https://uploadfiles.nowcoder.com/files/20211126/550958136_1637934095344/image-20210107173156561.png)
 
@@ -539,8 +514,6 @@ jstack [PID] > jstack.txt
   - 利用grep -n可以定位到nid=0x220的行数
   - 然后查询指定行附近的内容(前10行，后20行等)
 
-
-
 ## 37. 如何找到占用内存最多的进程？
 
 ```shell
@@ -569,25 +542,19 @@ find / -type f -size +10G
 find / -name *.ppt
 ```
 
-
-
 ## 41. 查看某个文件的大小？
 
-- https://www.cnblogs.com/xiaojianblogs/p/6697915.html
+- <https://www.cnblogs.com/xiaojianblogs/p/6697915.html>
 
 ```shell
 du -h /usr/local/apache2/logs/access_log
 ```
-
-
 
 - 获取某个文件夹的大小
 
 ```shell
 du -sh data
 ```
-
-
 
 ## 42. 查看某log文件某个字符串的前后5行？
 
@@ -692,8 +659,6 @@ netstat -anp | awk '{print $6}' | sort | uniq -c | sort -n
 lsof | grep hello.c
 ```
 
-
-
 - lsof显示的结果，从左往右分别代表：打开该文件的程序名，进程id，用户，文件描述符，文件类型，设备，大小，iNode号，文件名。
 
 ```shell
@@ -701,14 +666,12 @@ COMMAND   PID                      USER   FD             TYPE        DEVICE SIZE
 vi        27940                    hyb    7u      REG               8,15     16384     137573 /home/hyb/.1.txt.swp
 ```
 
-
-
 ## 54. less和vim如何查看日志并寻找关键字？
 
 ### less
 
 - 基本参数
-  - https://www.cnblogs.com/molao-doing/articles/6541455.html
+  - <https://www.cnblogs.com/molao-doing/articles/6541455.html>
 
 ```
 b 向后翻一页
@@ -726,8 +689,6 @@ N：反向重复前一个搜索（与 / 或 ？ 有关）
 
 - /+关键字 ，回车即可。此为从文档当前位置向下查找关键字，按n键查找关键字下一个位置，N往回找；
 - ?+关键字，回车即可。此为从文档挡圈位置向上查找关键字，按n键向上查找关键字，N往回找；
-
-
 
 ### 55. vim如何删除游标所在行
 

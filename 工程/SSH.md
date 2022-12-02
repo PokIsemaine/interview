@@ -59,11 +59,7 @@ SSH是一种协议标准，用于在网络主机之间进行加密的一种协�
 
 图1-4：中间人攻击
 
-
-
 ### **2.1 SSH 中是如何解决这个问题的？**
-
-
 
 #### **2.1.1 基于口令的认证**
 
@@ -98,8 +94,6 @@ Password: (enter password)
 
 图1-5：公钥认证流程
 
-##
-
 1. Client 将自己的公钥存放在 Server 上，追加在文件 authorized_keys 中。注意：Client 端的 Public key 是 Client 手动 Copy 到 Server端的，SSH 建立连接过程中没有公钥的交换操作。
 2. Server 端接收到 Client 的连接请求后，会在 authorized_keys 中匹配到 Client 的公钥 pubKey，并生成随机数 R，用 Client 的公钥对该随机数进行加密得到 pubKey(R)，然后将加密后信息发送给 Client。
 3. Client 端通过私钥进行解密得到随机数 R，然后对随机数 R 和本次会话的 SessionKey 利用 MD5 生成摘要 Digest1，发送给 Server 端。
@@ -125,8 +119,6 @@ ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 chmod 0600 ~/.ssh/authorized_keys
 ```
-
-
 
 ssh-keygen 是用于生产密钥的工具。
 
@@ -196,8 +188,6 @@ example.hostname.com ssh-rsa AAAAB4NzaC1yc2EAAAABIwAAAQEA...
 
 > 这种方案足够安全吗？当然不，比如第一次连接一个未知 Server 的时候，known_hosts 还没有该 Server 的 host key，这不也可能遭到**中间人**攻击吗？这可能只是安全性和可操作性之间的折中吧。
 
-
-
 ## SSH 如何配置
 
 ### 连接方式
@@ -216,11 +206,7 @@ ssh qiangzibro@10.22.75.212
 
 接下来，终端会提示你一条信息，输入yes回车，会提示你输入密码，就像这样。
 
-
-
 ![img](https://pic3.zhimg.com/v2-bbc1298be24fdfb6a63775e751f21a3a_b.png)
-
-
 
 先别着急使用下去，稍加配置可以让我们使用得更加舒心、安全。
 

@@ -22,14 +22,14 @@
 
 ![基于 TCP 协议的客户端和服务端工作](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL3hpYW9saW5jb2Rlci9JbWFnZUhvc3QyLyVFOCVBRSVBMSVFNyVBRSU5NyVFNiU5QyVCQSVFNyVCRCU5MSVFNyVCQiU5Qy9UQ1AtJUU0JUI4JTg5JUU2JUFDJUExJUU2JThGJUExJUU2JTg5JThCJUU1JTkyJThDJUU1JTlCJTlCJUU2JUFDJUExJUU2JThDJUE1JUU2JTg5JThCLzM0LmpwZw?x-oss-process=image/format,png)
 
-- 服务端和客户端初始化 `socket`，得到文件描述符；
-- 服务端调用 `bind`，将 socket 绑定在指定的 IP 地址和端口;
-- 服务端调用 `listen`，进行监听；
-- 服务端调用 `accept`，等待客户端连接；
-- 客户端调用 `connect`，向服务端端的地址和端口发起连接请求；
-- 服务端 `accept` 返回用于传输的 `socket` 的文件描述符；
-- 客户端调用 `write` 写入数据；服务端调用 `read` 读取数据；
-- 客户端断开连接时，会调用 `close`，那么服务端 `read` 读取数据的时候，就会读取到了 `EOF`，待处理完数据后，服务端调用 `close`，表示连接关闭。
+* 服务端和客户端初始化 `socket`，得到文件描述符；
+* 服务端调用 `bind`，将 socket 绑定在指定的 IP 地址和端口;
+* 服务端调用 `listen`，进行监听；
+* 服务端调用 `accept`，等待客户端连接；
+* 客户端调用 `connect`，向服务端端的地址和端口发起连接请求；
+* 服务端 `accept` 返回用于传输的 `socket` 的文件描述符；
+* 客户端调用 `write` 写入数据；服务端调用 `read` 读取数据；
+* 客户端断开连接时，会调用 `close`，那么服务端 `read` 读取数据的时候，就会读取到了 `EOF`，待处理完数据后，服务端调用 `close`，表示连接关闭。
 
 这里需要注意的是，服务端调用 `accept` 时，连接成功了会返回一个已完成连接的 socket，后续用来传输数据。
 
@@ -37,14 +37,12 @@
 
 成功连接建立之后，双方开始通过 read 和 write 函数来读写数据，就像往一个文件流里面写东西一样。
 
-
-
 ### listen 时候参数 backlog 的意义
 
 Linux内核中会维护两个队列：
 
-- 半连接队列（SYN 队列）：接收到一个 SYN 建立连接请求，处于 SYN_RCVD 状态；
-- 全连接队列（Accpet 队列）：已完成 TCP 三次握手过程，处于 ESTABLISHED 状态；
+* 半连接队列（SYN 队列）：接收到一个 SYN 建立连接请求，处于 SYN_RCVD 状态；
+* 全连接队列（Accpet 队列）：已完成 TCP 三次握手过程，处于 ESTABLISHED 状态；
 
 ![ SYN 队列 与 Accpet 队列 ](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL3hpYW9saW5jb2Rlci9JbWFnZUhvc3QyLyVFOCVBRSVBMSVFNyVBRSU5NyVFNiU5QyVCQSVFNyVCRCU5MSVFNyVCQiU5Qy9UQ1AtJUU0JUI4JTg5JUU2JUFDJUExJUU2JThGJUExJUU2JTg5JThCJUU1JTkyJThDJUU1JTlCJTlCJUU2JUFDJUExJUU2JThDJUE1JUU2JTg5JThCLzM1LmpwZw?x-oss-process=image/format,png)
 
@@ -52,8 +50,8 @@ Linux内核中会维护两个队列：
 int listen (int socketfd, int backlog)
 ```
 
-- 参数一 socketfd 为 socketfd 文件描述符
-- 参数二 backlog，这参数在历史版本有一定的变化
+* 参数一 socketfd 为 socketfd 文件描述符
+* 参数二 backlog，这参数在历史版本有一定的变化
 
 在早期 Linux 内核 backlog 是 SYN 队列大小，也就是未完成的队列大小。
 
@@ -63,22 +61,18 @@ int listen (int socketfd, int backlog)
 
 想详细了解 TCP 半连接队列和全连接队列，可以看这篇：[TCP 半连接队列和全连接队列满了会发生什么？又该如何应对？](https://xiaolincoding.com/network/3_tcp/tcp_queue.html)
 
-
-
 ### accept 发送在三次握手的哪一步
 
 我们先看看客户端连接服务端时，发送了什么？
 
 ![socket 三次握手](https://cdn.xiaolincoding.com/gh/xiaolincoder/ImageHost4/%E7%BD%91%E7%BB%9C/socket%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.drawio.png)
 
-- 客户端的协议栈向服务端端发送了 SYN 包，并告诉服务端端当前发送序列号 client_isn，客户端进入 SYN_SENT 状态；
-- 服务端端的协议栈收到这个包之后，和客户端进行 ACK 应答，应答的值为 client_isn+1，表示对 SYN 包 client_isn 的确认，同时服务端也发送一个 SYN 包，告诉客户端当前我的发送序列号为 server_isn，服务端端进入 SYN_RCVD 状态；
-- 客户端协议栈收到 ACK 之后，使得应用程序从 `connect` 调用返回，表示客户端到服务端端的单向连接建立成功，客户端的状态为 ESTABLISHED，同时客户端协议栈也会对服务端端的 SYN 包进行应答，应答数据为 server_isn+1；
-- ACK 应答包到达服务端端后，服务端端的 TCP 连接进入 ESTABLISHED 状态，同时服务端端协议栈使得 `accept` 阻塞调用返回，这个时候服务端端到客户端的单向连接也建立成功。至此，客户端与服务端两个方向的连接都建立成功。
+* 客户端的协议栈向服务端端发送了 SYN 包，并告诉服务端端当前发送序列号 client_isn，客户端进入 SYN_SENT 状态；
+* 服务端端的协议栈收到这个包之后，和客户端进行 ACK 应答，应答的值为 client_isn+1，表示对 SYN 包 client_isn 的确认，同时服务端也发送一个 SYN 包，告诉客户端当前我的发送序列号为 server_isn，服务端端进入 SYN_RCVD 状态；
+* 客户端协议栈收到 ACK 之后，使得应用程序从 `connect` 调用返回，表示客户端到服务端端的单向连接建立成功，客户端的状态为 ESTABLISHED，同时客户端协议栈也会对服务端端的 SYN 包进行应答，应答数据为 server_isn+1；
+* ACK 应答包到达服务端端后，服务端端的 TCP 连接进入 ESTABLISHED 状态，同时服务端端协议栈使得 `accept` 阻塞调用返回，这个时候服务端端到客户端的单向连接也建立成功。至此，客户端与服务端两个方向的连接都建立成功。
 
 从上面的描述过程，我们可以得知**客户端 connect 成功返回是在第二次握手，服务端 accept 成功返回是在三次握手成功之后。**
-
-
 
 ### 客户端调用 close 了，连接断开的流程是什么？
 
@@ -86,16 +80,12 @@ int listen (int socketfd, int backlog)
 
 ![客户端调用 close 过程](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9jZG4uanNkZWxpdnIubmV0L2doL3hpYW9saW5jb2Rlci9JbWFnZUhvc3QyLyVFOCVBRSVBMSVFNyVBRSU5NyVFNiU5QyVCQSVFNyVCRCU5MSVFNyVCQiU5Qy9UQ1AtJUU0JUI4JTg5JUU2JUFDJUExJUU2JThGJUExJUU2JTg5JThCJUU1JTkyJThDJUU1JTlCJTlCJUU2JUFDJUExJUU2JThDJUE1JUU2JTg5JThCLzM3LmpwZw?x-oss-process=image/format,png)
 
-- 客户端调用 `close`，表明客户端没有数据需要发送了，则此时会向服务端发送 FIN 报文，进入 FIN_WAIT_1 状态；
-- 服务端接收到了 FIN 报文，TCP 协议栈会为 FIN 包插入一个文件结束符 `EOF` 到接收缓冲区中，应用程序可以通过 `read` 调用来感知这个 FIN 包。这个 `EOF` 会被**放在已排队等候的其他已接收的数据之后**，这就意味着服务端需要处理这种异常情况，因为 EOF 表示在该连接上再无额外数据到达。此时，服务端进入 CLOSE_WAIT 状态；
-- 接着，当处理完数据后，自然就会读到 `EOF`，于是也调用 `close` 关闭它的套接字，这会使得服务端发出一个 FIN 包，之后处于 LAST_ACK 状态；
-- 客户端接收到服务端的 FIN 包，并发送 ACK 确认包给服务端，此时客户端将进入 TIME_WAIT 状态；
-- 服务端收到 ACK 确认包后，就进入了最后的 CLOSE 状态；
-- 客户端经过 `2MSL` 时间之后，也进入 CLOSE 状态；
-
-
-
-
+* 客户端调用 `close`，表明客户端没有数据需要发送了，则此时会向服务端发送 FIN 报文，进入 FIN_WAIT_1 状态；
+* 服务端接收到了 FIN 报文，TCP 协议栈会为 FIN 包插入一个文件结束符 `EOF` 到接收缓冲区中，应用程序可以通过 `read` 调用来感知这个 FIN 包。这个 `EOF` 会被**放在已排队等候的其他已接收的数据之后**，这就意味着服务端需要处理这种异常情况，因为 EOF 表示在该连接上再无额外数据到达。此时，服务端进入 CLOSE_WAIT 状态；
+* 接着，当处理完数据后，自然就会读到 `EOF`，于是也调用 `close` 关闭它的套接字，这会使得服务端发出一个 FIN 包，之后处于 LAST_ACK 状态；
+* 客户端接收到服务端的 FIN 包，并发送 ACK 确认包给服务端，此时客户端将进入 TIME_WAIT 状态；
+* 服务端收到 ACK 确认包后，就进入了最后的 CLOSE 状态；
+* 客户端经过 `2MSL` 时间之后，也进入 CLOSE 状态；
 
 ### 没有 accept 能建立连接吗？没 listen 呢？
 
@@ -173,8 +163,6 @@ int main()
 
 通过这个现象，我们可以多想想为什么。顺便好好了解下三次握手的细节。
 
-
-
 #### 三次握手的细节分析
 
 我们先看面试八股文的老股，三次握手。
@@ -189,8 +177,8 @@ int main()
 
 ![半连接队列和全连接队列](https://img-blog.csdnimg.cn/img_convert/36242c85809865fcd2da48594de15ebb.png)
 
-- **半连接队列（SYN队列）**，服务端收到**第一次握手**后，会将`sock`加入到这个队列中，队列内的`sock`都处于`SYN_RECV` 状态。
-- **全连接队列（ACCEPT队列）**，在服务端收到**第三次握手**后，会将半连接队列的`sock`取出，放到全连接队列中。队列里的`sock`都处于 `ESTABLISHED`状态。这里面的连接，就**等着服务端执行accept()后被取出了。**
+* **半连接队列（SYN队列）**，服务端收到**第一次握手**后，会将`sock`加入到这个队列中，队列内的`sock`都处于`SYN_RECV` 状态。
+* **全连接队列（ACCEPT队列）**，在服务端收到**第三次握手**后，会将半连接队列的`sock`取出，放到全连接队列中。队列里的`sock`都处于 `ESTABLISHED`状态。这里面的连接，就**等着服务端执行accept()后被取出了。**
 
 看到这里，文章开头的问题就有了答案，建立连接的过程中根本不需要`accept()`参与， **执行accept()只是为了从全连接队列里取出一条连接。**
 
@@ -241,8 +229,6 @@ Fri Sep 17 09:00:45 2021
     4343 times the listen queue of a socket overflowed
 ```
 
-
-
 **查看半连接队列**
 
 半连接队列没有命令可以直接查看到，但因为半连接队列里，放的都是`SYN_RECV`状态的连接，那可以通过统计处于这个状态的连接的数量，间接获得半连接队列的长度。
@@ -273,8 +259,6 @@ Fri Sep 17 08:36:38 2021
     26395 SYNs to LISTEN sockets dropped
 ```
 
-
-
 #### **全连接队列满了会怎么样？**
 
 如果队列满了，服务端还收到客户端的第三次握手ACK，默认当然会丢弃这个ACK。
@@ -286,11 +270,11 @@ Fri Sep 17 08:36:38 2021
 0
 ```
 
-- `tcp_abort_on_overflow`设置为 0，全连接队列满了之后，会丢弃这个第三次握手ACK包，并且开启定时器，重传第二次握手的SYN+ACK，如果重传超过一定限制次数，还会把对应的**半连接队列里的连接**给删掉。
+* `tcp_abort_on_overflow`设置为 0，全连接队列满了之后，会丢弃这个第三次握手ACK包，并且开启定时器，重传第二次握手的SYN+ACK，如果重传超过一定限制次数，还会把对应的**半连接队列里的连接**给删掉。
 
 ![tcp_abort_on_overflow为0](https://img-blog.csdnimg.cn/img_convert/874f2fb7108020fd4dcfa021f377ec66.png)
 
-- `tcp_abort_on_overflow`设置为 1，全连接队列满了之后，就直接发RST给客户端，效果上看就是连接断了。
+* `tcp_abort_on_overflow`设置为 1，全连接队列满了之后，就直接发RST给客户端，效果上看就是连接断了。
 
 这个现象是不是很熟悉，服务端**端口未监听**时，客户端尝试去连接，服务端也会回一个RST。这两个情况长一样，所以客户端这时候收到RST之后，其实无法区分到底是**端口未监听**，还是**全连接队列满了**。
 
@@ -365,15 +349,12 @@ Fri Sep 17 08:36:38 2021
 
 TCP 同时打开的情况也类似，只不过从一个客户端变成了两个客户端而已。
 
-
-
 #### 总结
 
-- **每一个**`socket`执行`listen`时，内核都会自动创建一个半连接队列和全连接队列。
-- 第三次握手前，TCP连接会放在半连接队列中，直到第三次握手到来，才会被放到全连接队列中。
-- `accept方法`只是为了从全连接队列中拿出一条连接，本身跟三次握手几乎**毫无关系**。
-- 出于效率考虑，虽然都叫队列，但半连接队列其实被设计成了**哈希表**，而全连接队列本质是链表。
-- 全连接队列满了，再来第三次握手也会丢弃，此时如果`tcp_abort_on_overflow=1`，还会直接发`RST`给客户端。
-- 半连接队列满了，可能是因为受到了`SYN Flood`攻击，可以设置`tcp_syncookies`，绕开半连接队列。
-- 客户端没有半连接队列和全连接队列，但有一个**全局hash**，可以通过它实现自连接或TCP同时打开。
-
+* **每一个**`socket`执行`listen`时，内核都会自动创建一个半连接队列和全连接队列。
+* 第三次握手前，TCP连接会放在半连接队列中，直到第三次握手到来，才会被放到全连接队列中。
+* `accept方法`只是为了从全连接队列中拿出一条连接，本身跟三次握手几乎**毫无关系**。
+* 出于效率考虑，虽然都叫队列，但半连接队列其实被设计成了**哈希表**，而全连接队列本质是链表。
+* 全连接队列满了，再来第三次握手也会丢弃，此时如果`tcp_abort_on_overflow=1`，还会直接发`RST`给客户端。
+* 半连接队列满了，可能是因为受到了`SYN Flood`攻击，可以设置`tcp_syncookies`，绕开半连接队列。
+* 客户端没有半连接队列和全连接队列，但有一个**全局hash**，可以通过它实现自连接或TCP同时打开。
