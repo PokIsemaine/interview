@@ -169,7 +169,7 @@ DNS 中的域名都是用**句点**来分隔的，比如 `www.server.com`，这�
 **A记录**
 A记录也称为主机记录，A记录的基本作用就是一个主机域名对应的ip地址是多少，即是域名和ip地址的对应关系。
 
-```
+```shell
 www.baidu.com. IN A 1.1.1.2
 mx1.baidu.com. IN A 1.1.1.3
 mx2.baidu.com. IN A 1.1.1.3
@@ -179,7 +179,7 @@ mx2.baidu.com. IN A 1.1.1.3
 NS记录称为域名服务器记录，用来指定该域名由哪个DNS服务器来进行解析。假设baidu.com区域有两个DNS服务器负责解析，ns1.baidu.com是主服务器，ns2.baidu.com是辅助服务器，ns1.baidu.com的ip是202.99.16.1，ns2.baidu.com的ip是202.99.16.2。那么我们应该创建两条NS记录，当然，NS记录依赖A记录的解析，我们首先应该为ns1.baidu.com和ns2.baidu.com创建两条A记录
 注：ns记录说明，在这个区域里，有多少个服务器承担解析的任务
 
-```
+```shell
 baidu.com. IN NS ns1.baidu.com. 
 baidu.com. IN NS ns2.baidu.com.
 ```
@@ -197,14 +197,14 @@ baidu.com. IN NS ns2.baidu.com.
 * 另外使用Cname记录也有安全方面的考虑因素？
  例如我们不希望别人知道某个网站的真实域名，那我们可以让用户访问网站的别名，例如我们访问的百度网站的真实域名就是www.a.shifen.com，我们使用的www.baidu.com只是www.a.shifen.com的别名而已
 
-```
+```shell
 web.sangfor.com. IN CNAME www.sangfor.com
 ```
 
 **MX记录**
 又称为邮件交换记录，MX记录用于说明哪台服务器是当前区域的邮件服务器，例如在baidu.com区域中，mail.baidu.com是邮件服务器，而且IP地址是202.99.16.125。那么我们就可以在DNS服务器中进行下列处理：1、为邮件服务器创建A记录，我们首先为邮件服务器创建一条A记录，这是因为MX记录中描述邮件服务器时不能使用IP地址，只能使用完全合格域名
 
-```
+```shell
 magedu.com. IN MX 10 mx1.magedu.com. 
 IN MX 20 mx2.magedu.com
 ```
@@ -212,7 +212,7 @@ IN MX 20 mx2.magedu.com
 **PRT记录**
 又称为逆向查询记录，用于从ip地址中查询域名。PTR记录是A记录的逆向记录，作用是把IP地址解析为域名
 
-```
+```shell
 4.3.2.1.in-addr.arpa. IN PTR www.sangfor.com
 ```
 
@@ -234,7 +234,7 @@ DNS污染是指一些刻意制造或无意中制造出来的域名服务器分�
 
 **验证方法**
 
-```
+```shell
 nslookup 对应的域名 一个不存在的域名服务器地址
 nslookup http://780822.com 144.223.234.234
 ```
