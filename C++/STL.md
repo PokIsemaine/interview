@@ -98,6 +98,7 @@
 
 * deque 的实现
 * deque 和 vector 的区别
+* deque 优缺点
 
 ## 回答
 
@@ -807,7 +808,7 @@ int main()
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/02900243e1624319b16f5ec2e9c1c315.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5qOu5piO5biu5aSn5LqO6buR6JmO5biu,size_15,color_FFFFFF,t_70,g_se,x_16)
 
-​ 可以看到以倍数的方式扩容比以等长个数的扩容方式效率高。
+ 可以看到以倍数的方式扩容比以等长个数的扩容方式效率高。
 
 3. **为什么选择1.5倍或者2倍方式扩容，而不是3倍、4倍**
     扩容原理为：申请新空间，拷贝元素，释放旧空间，理想的分配方案是在第N次扩容时如果能复用之前N-1次释放的空间就太好了，如果按照2倍方式扩容，第i次扩容空间大小如下：$1,2,4,8,16,32......2^i$
@@ -1321,13 +1322,13 @@ mapStudent.insert(make_pair(1, "student_one"));
 mapStudent[1] = "student_one"; 
 ```
 
-#### STL中unordered_map和map的区别和应用场景
+#### STL 中 unordered_map 和 map 的区别和应用场景
 
-map支持键值的自动排序，底层机制是红黑树，红黑树的查询和维护时间复杂度均为O(logn)，但是空间占用比较大，因为每个节点要保持父节点、孩子节点及颜色的信息
+map 支持键值的自动排序，底层机制是红黑树，红黑树的查询和维护时间复杂度均为$O(LogN)$，但是空间占用比较大，因为每个节点要保持父节点、孩子节点及颜色的信息
 
-unordered_map是C++ 11新添加的容器，底层机制是哈希表，通过hash函数计算元素位置，其查询时间复杂度为O(1)，维护时间与bucket桶所维护的list长度有关，但是建立hash表耗时较大
+unordered_map 是C++ 11新添加的容器，底层机制是哈希表，通过hash函数计算元素位置，其查询时间复杂度为 $O(1)$ ，维护时间与bucket桶所维护的list长度有关，但是建立hash表耗时较大
 
-从两者的底层机制和特点可以看出：map适用于有序数据的应用场景，unordered_map适用于高效查询的应用场景
+从两者的底层机制和特点可以看出：**map适用于有序数据的应用场景，unordered_map适用于高效查询的应用场景**
 
 #### （multi）map/set是怎么实现的
 
@@ -1351,7 +1352,7 @@ map 、set、multiset、multimap的底层实现都是红黑树，epoll模型的�
 
 **特点**
 
-map和set的增删改查速度为都是logn，是比较高效的。
+map和set的增删改查速度为都是 $O(LogN)$，是比较高效的。
 
 * set和multiset会根据特定的排序准则自动将元素排序，set中元素不允许重复，multiset可以重复。
 * set的特性是，所有元素都会根据元素的值自动被排序（默认升序），set元素的键值就是实值，实值就是键值，set不允许有两个相同的键值
@@ -1361,39 +1362,49 @@ map和set的增删改查速度为都是logn，是比较高效的。
 * map的特性是所有元素会根据键值进行自动排序。map中所有的元素都是pair，拥有键值(key)和实值(value)两个部分，并且不允许元素有相同的key
 * 一旦map的key确定了，那么是无法修改的，但是可以修改这个key对应的value，**因此map的迭代器既不是constant iterator，也不是mutable iterator**
 
+
+
 **如何同时用 红黑树分别实现 map 和 set**
 
-在这里我们定义了一个模版参数，如果它是key那么它就是set，如果它是map，那么它就是map；底层是红黑树，实现map的红黑树的节点数据类型是key+value，而实现set的节点数据类型是value
+* 在这里我们定义了一个模版参数，如果它是key那么它就是set，如果它是map，那么它就是map；
+* 底层是红黑树，实现map的红黑树的节点数据类型是key+value，而实现set的节点数据类型是value
+
+
 
 **为不用二叉搜索树：**
 
-高度越小越好，BST这种有特殊情况，比如只有左子树有值，导致O(n)复杂度
+高度越小越好，BST这种有特殊情况，比如只有左子树有值，导致 $O(N)$ 复杂度
+
+
 
 **为什么不用 AVL 树：**
 
-对于STL中的set和map来说，需要进行频繁的插入和删除，而AVL这种严格平衡二叉树，插入删除太频繁会导致左旋右旋操作频繁，影响性能，AVL只适合查找较多但插入、删除不多的操作。而红黑树也是一种平衡二叉树，但只要求最长路径不超过最短路径的两倍，因此，更适合插入、删除操作较多的结构。
+* 对于STL中的set和map来说，需要进行频繁的插入和删除，而AVL这种严格平衡二叉树，插入删除太频繁会导致左旋右旋操作频繁，影响性能，AVL只适合查找较多但插入、删除不多的操作。
+* 红黑树也是一种平衡二叉树，但只要求最长路径不超过最短路径的两倍，因此，更适合插入、删除操作较多的结构。
+
+
 
 #### set和map的区别，multimap和multiset的区别
 
-set只提供一种数据类型的接口，但是会将这一个元素分配到key和value上，而且它的compare_function用的是 identity()函数，这个函数是输入什么输出什么，这样就实现了set机制，set的key和value其实是一样的了。其实他保存的是两份元素，而不是只保存一份元素
+* set只提供一种数据类型的接口，但是会将这一个元素分配到key和value上，而且它的compare_function用的是 identity()函数，这个函数是输入什么输出什么，这样就实现了set机制，set的key和value其实是一样的了。其实他保存的是两份元素，而不是只保存一份元素
+* map则提供两种数据类型的接口，分别放在key和value的位置上，他的比较function采用的是红黑树的comparefunction（），保存的确实是两份元素。
+* 他们两个的insert都是采用红黑树的insert_unique() 独一无二的插入 。
+* multimap和map的唯一区别就是：multimap调用的是红黑树的insert_equal(),可以重复插入而map调用的则是独一无二的插入insert_unique()，multiset和set也一样，底层实现都是一样的，只是在插入的时候调用的方法不一样。
 
-map则提供两种数据类型的接口，分别放在key和value的位置上，他的比较function采用的是红黑树的comparefunction（），保存的确实是两份元素。
 
-他们两个的insert都是采用红黑树的insert_unique() 独一无二的插入 。
-
-multimap和map的唯一区别就是：multimap调用的是红黑树的insert_equal(),可以重复插入而map调用的则是独一无二的插入insert_unique()，multiset和set也一样，底层实现都是一样的，只是在插入的时候调用的方法不一样。
 
 #### 为何map和set的插入删除效率比其他序列容器高，而且每次insert之后，以前保存的iterator不会失效？
 
-用了红黑树数据结构
+* 用了红黑树数据结构
+* 因为存储的是结点，不需要内存拷贝和内存移动。因为插入操作只是结点指针换来换去，结点内存没有改变。而iterator就像指向结点的指针，内存没变，指向内存的指针也不会变。
 
-因为存储的是结点，不需要内存拷贝和内存移动。
 
-因为插入操作只是结点指针换来换去，结点内存没有改变。而iterator就像指向结点的指针，内存没变，指向内存的指针也不会变。
 
 #### 为何map和set不能像vector一样有个reserve函数来预分配数据?
 
 因为在map和set内部存储的已经不是元素本身了，而是包含元素的结点。也就是说map内部使用的Alloc并不是map<Key, Data, Compare, Alloc>声明的时候从参数中传入的Alloc。
+
+
 
 ### unordered_map
 
@@ -1418,6 +1429,8 @@ hash table表格内的元素称为桶（bucket),而由桶所链接的元素称�
 **什么时候扩容：**当向容器添加元素的时候，会判断当前容器的元素个数，如果大于等于阈值---即当前数组的长度乘以加载因子的值的时候，就要自动扩容啦。
 
 **扩容(resize)**就是重新计算容量，向HashMap对象里不停的添加元素，而HashMap对象内部的数组无法装载更多的元素时，对象就需要扩大数组的长度，以便能装入更多的元素。
+
+
 
 #### unordered_map 的实现
 
@@ -1815,7 +1828,7 @@ vector是单向开口（尾部）的连续线性空间，deque则是一种双向
 
 ![img](https://cdn.jsdelivr.net/gh/forthespada/mediaImage1@1.6.4.2/202102/1565876257552.png)
 
-deque和vector的最大差异一个是deque运行在常数时间内对头端进行元素操作，二是deque没有容量的概念，它是动态地以分段连续空间组合而成，可以随时增加一段新的空间并链接起来
+
 
 deque虽然也提供随机访问的迭代器，但是其迭代器并不是普通的指针，其复杂程度比vector高很多，因此除非必要，否则一般使用vector而非deque。如果需要对deque排序，可以先将deque中的元素复制到vector中，利用sort对vector排序，再将结果复制回deque
 
@@ -1841,7 +1854,7 @@ public:
 
 ![img](https://cdn.jsdelivr.net/gh/forthespada/mediaImage1@1.6.4.2/202102/1565876324016.png)
 
-deque内部有一个指针指向map，map是一小块连续空间，其中的每个元素称为一个节点，node，每个node都是一个指针，指向另一段较大的连续空间，称为缓冲区，这里就是deque中实际存放数据的区域，默认大小512bytes。整体结构如上图所示。
+deque内部有一个指针指向map，map是一小块连续空间，其中的每个元素称为一个节点 node。每个node都是一个指针，指向另一段较大的连续空间，称为缓冲区，这里就是deque中实际存放数据的区域，默认大小512bytes。整体结构如上图所示。
 
 deque的迭代器数据结构如下：
 
@@ -1865,17 +1878,19 @@ deque迭代器的“++”、“--”操作是远比vector迭代器繁琐，其�
 
 #### deque 和 vector 的区别
 
+* deque运行在常数时间内对头端进行元素操作
 * vector是单向开口的连续区间，deque是双向开口的连续区间（可以在头尾两端进行插入和删除操作）
-* deque没有提供空间保留功能，也就是没有capacity这个概念，而vector提供了空间保留功能。即vector有capacity和reserve函数，deque 和 list一样，没有这两个函数。
+* deque没有容量的概念，它是动态地以分段连续空间组合而成，可以随时增加一段新的空间并链接起来
+* 迭代器复杂度比 vector高很多因为涉及到多段连续空间的拼接以及整体连续性的维护
 
-deque是在功能上合并了vector和list。
+#### duque 优缺点
 
 **优点：**
 
-1. 随机访问方便，即支持[ ]操作符和vector.at()
+* 随机访问方便，即支持[ ]操作符和vector.at()
+* 在内部方便的进行插入和删除操作
+* 可在 $O(1)$ 两端进行push、pop
 
-2. 在内部方便的进行插入和删除操作
+**缺点：**
 
-3. 可在两端进行push、pop
-
-缺点：占用内存多
+* 占用内存多
