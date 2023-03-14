@@ -595,9 +595,16 @@ template<> struct __type_traits<Shape>{
 #### 迭代器失效的情况
 
 **插入操作**
-对于vector和string，如果容器内存被重新分配，iterators,pointers,references失效；如果没有重新分配，那么插入点之前的iterator有效，插入点之后的iterator失效；
 
-对于deque，如果插入点位于除front和back的其它位置，iterators,pointers,references失效；当我们插入元素到front和back时，deque的迭代器失效，但reference和pointers有效；
+对于vector和string
+
+* 如果容器内存被重新分配，iterators,pointers,references失效
+* 如果没有重新分配，那么插入点之前的iterator有效，插入点之后的iterator失效；
+
+对于deque
+
+* 如果插入点位于除front和back的其它位置，iterators,pointers,references失效；
+* 当我们插入元素到front和back时，deque的迭代器失效，但reference和pointers有效；
 
 对于list和forward_list，所有的iterator,pointer和refercnce有效。
 
