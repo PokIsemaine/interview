@@ -62,8 +62,6 @@
 
 ### （multi）map/set
 
-* map 中[] 与 find 的区别？
-* map 插入方式有几种？
 * STL中unordered_map 和 map 的区别和应用场景
 * （multi）map/set是怎么实现的
 * set和map  的区别，multimap和multiset的区别
@@ -273,7 +271,7 @@ myFunc("helloworld!");
 
 仿函数既能想普通函数一样传入给定数量的参数，还能存储或者处理更多我们需要的有用信息。我们可以举个例子：
 
-假设有一个vector<string>，你的任务是统计长度小于5的string的个数，如果使用count_if函数的话，你的代码可能长成这样：
+假设有一个 `vector<string>`，你的任务是统计长度小于5的string的个数，如果使用count_if函数的话，你的代码可能长成这样：
 
 ```cpp
  bool LengthIsLessThanFive(const string& str) {
@@ -1294,11 +1292,8 @@ swap
 
 #### 函数里的vector存在堆上还是栈上，为什么？
 
-无论你的定义是：
-`vector<int*> *p = new vector<int*>`;
-还是
-`vector<int*> p`
-其元素都是在堆上进行分配。
+无论你的定义是：`vector<int*> *p = new vector<int*>`;
+还是`vector<int*> p`其元素都是在堆上进行分配。
 
 C++语言中，所有`new`和`malloc`创建的变量均存放在堆区，这已经是一个共识。但是鲜为人知的是，STL库中的容器虽没有经过这两个关键字创建，但同样是存放在堆区。这与动态数组性质相同。如果从汇编角度观察便会发现，容器均调用了`allocator`来创建。
 
@@ -1309,33 +1304,6 @@ std::vector的默认实现是把内部数据分配在堆上，所以vector对象
 实际上，不论你怎么对vector进行push_back()，sizeof(vector)的值永远都不会变，变的只是vector的size() 因为在c++中，一个变量的类型，就表明了这个变量在内存中占用字节的大小，只要变量类型不变，sizeof()就不会变，而变量的类型是不允许改变的，因此vector自身是不能改变自身的大小的 vector只是一个实现了动态内存管理内存的类，它通过构造函数在堆上创建真正用于储存数据的对象并通过析构函数在堆上销毁储存数据的对象，那么你对vector进行push_back()的时候，都是在对这个储存数据的对象进行修改 因此你根本就不必用new来申请内存，可以理解为vector内部已经这么做了(事实上vector使用的是allocator 来申请内存的)，它只是做了一个简单包装，让你用起来更方便而已
 
 ### map/set
-
-#### map 中[] 与 find 的区别？
-
-* map的下标运算符[]的作用是：将关键码作为下标去执行查找，并返回对应的值；**如果不存在这个关键码，就将一个具有该关键码和值类型的默认值的项插入这个map**。
-
-* map的find函数：用关键码执行查找，找到了返回该位置的迭代器；如果不存在这个关键码，就返回尾迭代器。
-
-#### map 插入方式有几种？
-
-```c++
-// 用insert函数插入pair数据
-mapStudent.insert(pair<int, string>(1, "student_one")); 
-// 用insert函数插入value_type数据
-mapStudent.insert(map<int, string>::value_type (1, "student_one"));
-//  在insert函数中使用make_pair()函数
-mapStudent.insert(make_pair(1, "student_one"));
-//  用数组方式插入数据
-mapStudent[1] = "student_one"; 
-```
-
-#### STL 中 unordered_map 和 map 的区别和应用场景
-
-map 支持键值的自动排序，底层机制是红黑树，红黑树的查询和维护时间复杂度均为$O(LogN)$，但是空间占用比较大，因为每个节点要保持父节点、孩子节点及颜色的信息
-
-unordered_map 是C++ 11新添加的容器，底层机制是哈希表，通过hash函数计算元素位置，其查询时间复杂度为 $O(1)$ ，维护时间与bucket桶所维护的list长度有关，但是建立hash表耗时较大
-
-从两者的底层机制和特点可以看出：**map适用于有序数据的应用场景，unordered_map适用于高效查询的应用场景**
 
 #### （multi）map/set是怎么实现的
 
@@ -1415,41 +1383,36 @@ map和set的增删改查速度为都是 $O(LogN)$，是比较高效的。
 
 ### unordered_map
 
-#### STL中hash_map扩容发生什么？
-
-hash table表格内的元素称为桶（bucket),而由桶所链接的元素称为节点（node),其中存入桶元素的容器为stl本身很重要的一种序列式容器——vector容器。之所以选择vector为存放桶元素的基础容器，主要是因为vector容器本身具有动态扩容能力，无需人工干预。
-
- 向前操作：首先尝试从目前所指的节点出发，前进一个位置（节点），由于节点被安置于list内，所以利用节点的next指针即可轻易完成前进操作，如果目前正巧是list的尾端，就跳至下一个bucket身上，那正是指向下一个list的头部节点。
-
-#### STL中unordered_map和map的区别，hash_map如何解决冲突以及扩容
-
-**区别**
-
-* unordered_map和map类似，都是存储的key-value的值，可以通过key快速索引到value。不同的是unordered_map不会根据key的大小进行排序，
-* 存储时是根据key的hash值判断元素是否相同，即unordered_map内部元素是无序的，而map中的元素是按照二叉搜索树存储，进行中序遍历会得到有序遍历。
-* 所以使用时map的key需要定义operator<。而unordered_map需要定义hash_value函数并且重载operator==。但是很多系统内置的数据类型都自带这些，
-* 那么如果是自定义类型，那么就需要自己重载operator<或者hash_value()了。
-* 如果需要内部元素自动排序，使用map，不需要排序使用unordered_map
-* unordered_map的底层实现是hash_table;
-* hash_map底层使用的是hash_table，而hash_table使用的开链法进行冲突避免，所有hash_map采用开链法进行冲突解决。
-
-**什么时候扩容：**当向容器添加元素的时候，会判断当前容器的元素个数，如果大于等于阈值---即当前数组的长度乘以加载因子的值的时候，就要自动扩容啦。
-
-**扩容(resize)**就是重新计算容量，向HashMap对象里不停的添加元素，而HashMap对象内部的数组无法装载更多的元素时，对象就需要扩大数组的长度，以便能装入更多的元素。
-
-
-
 #### unordered_map 的实现
 
-STL中的hashtable使用的是**开链法**解决hash冲突问题，如下图所示。
+
 
 ![img](https://cdn.jsdelivr.net/gh/forthespada/mediaImage1@1.6.4.2/202102/1566639786045.png)
 
-hashtable中的bucket所维护的list既不是list也不是slist，而是其自己定义的由hashtable_node数据结构组成的linked-list，而bucket聚合体本身使用vector进行存储。hashtable的迭代器只提供前进操作，不提供后退操作
+* 开链法解决冲突
+* 扩容
+    * bucket 用 vector 存储，当元素的个数大于buckets的空间个数时，就会把buckets成2倍扩增，然后再调整为质数。这样重新计算后可以很好地把长链变短
+    * 在hashtable设计bucket的数量上，其内置了28个质数[53, 97, 193,...,429496729]，在创建hashtable时，会根据存入的元素个数选择大于等于元素个数的质数作为hashtable的容量（vector的长度），其中每个bucket所维护的linked-list长度也等于hashtable的容量。
+* 每个 bucket 维护的 list 既不是 list 也不是 slist，而是其自己定义的由 hashtable_node 数据结构组成的linked-list
+* hashtable的迭代器只提供前进操作，不提供后退操作
 
-在hashtable设计bucket的数量上，其内置了28个质数[53, 97, 193,...,429496729]，在创建hashtable时，会根据存入的元素个数选择大于等于元素个数的质数作为hashtable的容量（vector的长度），其中每个bucket所维护的linked-list长度也等于hashtable的容量。如果插入hashtable的元素个数超过了bucket的容量，就要进行重建table操作，即找出下一个质数，创建新的buckets vector，重新计算元素在新hashtable的位置。
 
-有一条规则是：**当元素的个数大于buckets的空间个数时，就会把buckets成2倍扩增，然后再调整为质数。这样重新计算后可以很好地把长链变短。**
+
+#### STL 中 unordered_map 和 map 的区别
+
+* unordered_map 底层哈希表，map 底层红黑树
+* unordered_map 无序，map 有序
+* map 的 key需要定义 operator <，unordered_map需要定义hash_value函数并且重载 ·operator==
+
+* unordered_map和map类似，都是存储的key-value的值，可以通过key快速索引到value。不同的是unordered_map不会根据key的大小进行排序
+
+* map适用于有序数据的应用场景，unordered_map适用于高效查询的应用场景
+
+    
+
+
+
+
 
 #### hashtable 解决冲突有哪些方法
 
@@ -1473,7 +1436,11 @@ hashtable中的bucket所维护的list既不是list也不是slist，而是其自�
 
 一旦hash函数计算的结果相同，就放入公共溢出区
 
+
+
 #### 如何优化哈希表
+
+
 
 ### priority_queue
 
