@@ -909,7 +909,7 @@ remove 和 erase 的区别
 
 由于 vector 的内存占用空间只增不减，比如你首先分配了10,000个字节，然后erase掉后面9,999个，留下一个有效元素，但是内存占用仍为10,000个。所有内存空间是在vector析构时候才能被系统回收。
 
-empty()用来检测容器是否为空的，clear()可以清空所有元素（只是把 size = 0，不会改变 capacity）。但是即使clear()，vector所占用的内存空间依然如故，无法保证内存的回收。
+empty() 用来检测容器是否为空的，clear()可以清空所有元素（只是把 size = 0，不会改变 capacity）。但是即使clear()，vector所占用的内存空间依然如故，无法保证内存的回收。
 
 如果需要空间动态缩小，可以考虑使用deque。如果vector，可以用swap()来帮助你释放内存。
 
@@ -922,6 +922,8 @@ vector().swap(Vec); //清空Vec的内存；
 * `vector<int>().swap(vec)`：清空内容，且释放内存，想得到一个全新的vector。
 * `vec.shrink_to_fit()`：请求容器降低其capacity和size匹配。
 * `vec.clear();vec.shrink_to_fit();`：清空内容，且释放内存。
+
+
 
 #### `vector<bool>` 有什么问题？
 
