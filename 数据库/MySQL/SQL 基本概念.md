@@ -29,7 +29,7 @@
 
 ### DQL
 
-* SQL 指向顺序
+* SQL 执行顺序
 
 ### DCL
 
@@ -44,6 +44,12 @@
 
 
 ### 多表查询
+
+
+
+
+
+### 视图/存储过程/触发器
 
 
 
@@ -353,7 +359,7 @@ TRUNCATE TABLE 表名
 
 ### DML
 
-##### 添加数据
+#### 添加数据
 
 ```sql
 #  给指定字段添加数据
@@ -379,7 +385,7 @@ INSERT INTO 表名 VALUES (值1, 值2, ...), (值1, 值2, ...), (值1, 值2, ...
 
     
 
-##### 修改数据
+#### 修改数据
 
 ```sql
 UPDATE 表名 SET 字段名1 = 值1 , 字段名2 = 值2 , .... [ WHERE 条件 ] ;
@@ -387,7 +393,7 @@ UPDATE 表名 SET 字段名1 = 值1 , 字段名2 = 值2 , .... [ WHERE 条件 ] 
 
 
 
-##### 删除数据
+#### 删除数据
 
 ```sql
 DELETE FROM 表名 [ WHERE 条件 ] 
@@ -411,16 +417,260 @@ DELETE FROM 表名 [ WHERE 条件 ]
 
 
 
-### DML
+#### 基础查询
+
+```sql
+# 查询多个字段
+SELECT 字段1, 字段2, 字段3 ... FROM 表名 
+
+# 字段设置别名
+SELECT 字段1 [ AS 别名1 ] , 字段2 [ AS 别名2 ] ... FROM 表名;
+
+# 去除重复记录
+SELECT DISTINCT 字段列表 FROM 表名;
+```
+
+
+
+#### 条件查询
+
+```sql
+SELECT 字段列表 FROM 表名 WHERE 条件列表 ;
+```
+
+条件
+
+| 比较运算符          | 功能                                            |
+| ------------------- | ----------------------------------------------- |
+| >                   | 大于                                            |
+| >=                  | 大于等于                                        |
+| <                   | 小于                                            |
+| <=                  | 小于等于                                        |
+| =                   | 等于                                            |
+| <> 或 !=            | 不等于                                          |
+| BETWEEN ... AND ... | 在某个范围之内(含最小、最大值)                  |
+| IN(...)             | 在in之后的列表中的值，多选一                    |
+| LIKE                | 占位符 模糊匹配(_匹配单个字符, %匹配任意个字符) |
+| IS NULL             | 是NULL                                          |
+
+逻辑运算符
+
+| 逻辑运算符 | 功能                         |
+| ---------- | ---------------------------- |
+| AND 或 &&  | 并且 (多个条件同时成立)      |
+| OR 或 \|\| | 或者 (多个条件任意一个成立） |
+| NOT 或 !   | 非 , 不是                    |
+
+#### 聚合函数
+
+```sql
+SELECT 聚合函数(字段列表) FROM 表名 ;
+```
+
+注意 : NULL值是不参与所有聚合函数运算的。
+
+| 函数  | 功能     |
+| ----- | -------- |
+| count | 统计数量 |
+| max   | 最大值   |
+| min   | 最小值   |
+| avg   | 平均值   |
+| sum   | 求和     |
+
+#### 分组查询
+
+```sql
+SELECT 字段列表 FROM 表名 [ WHERE 条件 ] GROUP BY 分组字段名 [ HAVING 分组
+后过滤条件 ];
+```
+
+
+
+#####  where与having区别
+
+* 执行时机不同：where是分组之前进行过滤，不满足where条件，不参与分组；而having是分组 之后对结果进行过滤。 
+* 判断条件不同：where不能对聚合函数进行判断，而having可以。
+
+
+
+* 分组之后，查询的字段一般为聚合函数和分组字段，查询其他字段无任何意义。 
+* 执行顺序: where > 聚合函数 > having 。 
+*  支持多字段分组, 具体语法为 : group by columnA,columnB
+
+#### 排序查询
+
+```sql
+SELECT 字段列表 FROM 表名 ORDER BY 字段1 排序方式1 , 字段2 排序方式2 ;
+```
+
+排序方式
+
+* ASC : 升序(默认值) 
+* DESC: 降序 
+
+注意事项： 
+
+* 如果是升序, 可以不指定排序方式ASC ; 
+*  如果是多字段排序，当第一个字段值相同时，才会根据第二个字段进行排序 ;
+
+#### 分页查询
+
+```sql
+SELECT 字段列表 FROM 表名 LIMIT 起始索引, 查询记录数 ;
+```
+
+* 起始索引从0开始，起始索引 = （查询页码 - 1）* 每页显示记录数。 
+* 分页查询是数据库的方言，不同的数据库有不同的实现，MySQL中是LIMIT。 
+*  如果查询的是第一页数据，起始索引可以省略，直接简写为 limit 10。
+
+
+
+
+
+### DCL
+
+DCL英文全称是Data Control Language(数据控制语言)，用来管理数据库用户、控制数据库的访 问权限。
+
+#### 管理用户
+
+```sql
+# 查询用户
+select * from mysql.user;
+
+# 创建用户
+CREATE USER '用户名'@'主机名' IDENTIFIED BY '密码';
+
+# 修改用户密码
+ALTER USER '用户名'@'主机名' IDENTIFIED WITH mysql_native_password BY '新密码' ;
+
+# 删除用户
+DROP USER '用户名'@'主机名' ;
+```
+
+
+
+*  在MySQL中需要通过用户名@主机名的方式，来唯一标识一个用户。
+* 主机名可以使用 % 通配。
+* 这类SQL开发人员操作的比较少，主要是DBA（ Database Administrator 数据库 管理员）使用。
+
+
+
+#### 权限控制
+
+权限
+
+| 权限                | 说明               |
+| ------------------- | ------------------ |
+| ALL, ALL PRIVILEGES | 所有权限           |
+| SELECT              | 查询数据           |
+| INSERT              | 插入数据           |
+| UPDATE              | 修改数据           |
+| DELETE              | 删除数据           |
+| ALTER               | 修改表             |
+| DROP                | 删除数据库/表/视图 |
+| CREATE              | 创建数据库/表      |
+
+
+
+```sql
+# 查询权限
+SHOW GRANTS FOR '用户名'@'主机名' ;
+
+# 授予权限
+GRANT 权限列表 ON 数据库名.表名 TO '用户名'@'主机名';
+
+# 撤销权限
+REVOKE 权限列表 ON 数据库名.表名 FROM '用户名'@'主机名';
+```
+
+注意事项： 
+
+* 多个权限之间，使用逗号分隔 
+* 授权时， 数据库名和表名可以使用 * 进行通配，代表所有。
 
 
 
 ### 函数
 
-#### SQL中的NOW()和CURRENT_DATE()两个函数有什么区别？
+#### 字符串函数
 
-* NOW（）命令用于显示当前年份，月份，日期，小时，分钟和秒。
-* CURRENT_DATE（）仅显示当前年份，月份和日期。
+```sql
+# concat 字符串拼接
+select concat('Hello', 'MySQL');
+
+# lower 全部转小写
+select lower('Hello');
+
+# upper 全部转大写
+select upper('Hello');
+
+# lpad 左填充
+select lpad('01', 5, '-');
+
+# rpad 右填充
+select rpad('01', 5, '-');
+
+# trim 去除空格
+select trim(' Hello MySQL ')
+
+# substring 截取子字符串
+select substring('Hello MySQL',1,5);
+```
+
+
+
+#### 数值函数
+
+```sql
+# ceil 向上取整
+select ceil(1.1);
+
+# floor 向下取整
+select floor(1.9);
+
+# mod 取模
+select mod(7, 4);
+
+# rand 获取 0- 1 随机数 
+select rand();
+
+# round：四舍五入 求参数x的四舍五入的值，保留y位小数
+select round(2.344,2);
+```
+
+
+
+#### 日期函数
+
+```sql
+# curdate：当前日期
+select curdate();
+
+# curtime：当前时间
+select curtime();
+
+# now：当前日期和时间
+select now();
+
+# YEAR , MONTH , DAY：当前年、月、日
+select YEAR(now());
+select MONTH(now());
+select DAY(now());
+
+# date_add：增加指定的时间间隔
+select date_add(now(), INTERVAL 70 YEAR );
+
+# datediff：获取两个日期相差的天数
+select datediff('2021-10-01', '2021-12-01');
+```
+
+
+
+#### 流程函数
+
+
+
+### 约束
 
 
 
@@ -435,6 +685,10 @@ DELETE FROM 表名 [ WHERE 条件 ]
 * 右外连接:右边为驱动表，驱动表的数据全部显示，匹配表的不匹配的不会显示。
 * 全外连接：连接的表中不匹配的数据全部会显示出来。
 * 交叉连接： 笛卡尔效应，显示的结果是链接表数的乘积。
+
+
+
+#### 小表驱动大表
 
 
 
