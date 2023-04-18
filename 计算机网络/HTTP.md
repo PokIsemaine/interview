@@ -1351,11 +1351,11 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4
 #### Cookie 和 Session 的区别？
 
 * 数据存放位置不同：Session数据是存在服务器中的，cookie数据存放在浏览器当中。
-* 安全程度不同：cookie放在服务器中不是很安全，session放在服务器中，相对安全。
+* 安全程度不同：cookie放在本地中不是很安全，session放在服务器中，相对安全。
 * 性能使用程度不同：session放在服务器上，访问增多会占用服务器的性能；考虑到减轻服务器性能方面，应使用cookie。
 * 数据存储大小不同：单个cookie保存的数据不能超过4K，session存储在服务端，根据服务器大小来定。
 
-####
+
 
 #### JWT 和 Session Cookies 的不同？
 
