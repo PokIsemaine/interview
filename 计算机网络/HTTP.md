@@ -1124,6 +1124,8 @@ QUIC 会有两个特殊的单向流，所谓的单向流只有一端可以发送
 
 #### 有了 HTTP 为什么还要 RPC？
 
+见 API 范式：RPC 部分
+
 #### 有了 HTTP 为什么还要 websocket？
 
 ### Cookie、Session、Token
