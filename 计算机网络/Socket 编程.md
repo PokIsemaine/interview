@@ -2,6 +2,8 @@
 
 ## 问题
 
+* socket 是什么？
+
 * 针对 TCP 如何 Socket 编程
 * listen 时候参数 backlog 的意义
 * accept 发送在三次握手的哪一步
@@ -17,6 +19,16 @@
 * socket在什么情况下可读?
 
 ## 回答
+
+## socket 是什么
+
+Socket是在应用层和传输层之间的一个抽象层，它把TCP/IP层复杂的操作抽象为几个简单的接口，供应用层调用实现进程在网络中的通信。Socket起源于UNIX，在Unix一切皆文件的思想下，进程间通信就被冠名为文件描述符（file desciptor），Socket是一种“打开—读/写—关闭”模式的实现，服务器和客户端各自维护一个“文件”，在建立连接打开后，可以向文件写入内容供对方读取或者读取对方内容，通讯结束时关闭文件。
+
+另外我们经常说到的Socket所在位置如下图：
+
+
+
+![img](https://pic2.zhimg.com/80/v2-07267d9c6efe0e7f290eaacedb37ebc9_720w.webp)
 
 ### 针对 TCP 如何 Socket 编程
 
