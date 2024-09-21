@@ -9,3 +9,4 @@
 7. 简述RDD的容错机制 ？
 8. 简述什么是 RDD 沿袭 ？
 9. RDD的cache和persist的区别？
+10. 简述Spark的RDD和partition的联系 ？
