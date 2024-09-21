@@ -7,3 +7,5 @@
 简述Spark Streaming的工作原理 ？
 
 简述Spark Streaming和Structed Streaming ？
+
+简述Spark Streaming的双流join的过程，怎么做的 ？
